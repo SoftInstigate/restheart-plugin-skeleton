@@ -1,0 +1,1 @@
+db.coll.insert({ a: 1});
