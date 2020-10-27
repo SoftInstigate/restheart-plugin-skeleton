@@ -1,0 +1,5 @@
+Do not delete!
+
+This file is used by maven:
+- fizzed-watcher-maven-plugin touches it when code changes and project is rebuilt
+- docker-maven-plugin rebuilds and restart the container when it is touched

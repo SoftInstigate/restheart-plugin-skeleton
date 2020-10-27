@@ -15,7 +15,7 @@ $ mvn fizzed-watcher:run
 You can also start the server with docker and have the container updated and restarted every time the plugin jar is rebuilt.
 
 ```
-$ mvn docker:build docker:start docker:watch -Ddocker.showLogs=true
+$ mvn package docker:build docker:start docker:watch -Ddocker.showLogs=true
 
 ```
 
