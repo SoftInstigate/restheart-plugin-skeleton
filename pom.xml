@@ -21,6 +21,7 @@
   </dependencies>
 
   <build>
+    <finalName>${project.artifactId}</finalName>
     <plugins>
       <plugin>
         <groupId>io.fabric8</groupId>
@@ -104,7 +105,7 @@
                 </links>
                 <volumes>
                   <bind>
-                    <volume>target/service-plugin.jar:/opt/restheart/plugins/service-plugin.jar</volume>
+                    <volume>target/restheart-plugin-skeleton.jar:/opt/restheart/plugins/restheart-plugin-skeleton.jar</volume>
                   </bind>
                 </volumes>
                 <wait>
