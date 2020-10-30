@@ -12,10 +12,10 @@ You can get the project automatically rebuilt every time there is a change in th
 $ mvn fizzed-watcher:run
 ```
 
-You can also start the server with docker and have the container updated and restarted every time the plugin jar is rebuilt.
+You can also start the server with docker-compose and have the container updated and restarted every time the plugin jar is rebuilt.
 
 ```
-$ mvn package docker:build docker:start docker:watch -Ddocker.showLogs=true
+$ docker-compose up
 
 ```
 

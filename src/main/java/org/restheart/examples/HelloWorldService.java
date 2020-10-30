@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.restheart.signup;
+package org.restheart.examples;
 
 /**
  *
@@ -27,18 +27,14 @@ import org.restheart.plugins.RegisterPlugin;
 import org.restheart.utils.HttpStatus;
 
 /**
- * verifeis a registered user
- *
- * it assumes that the user collection is 'restheart.users', the roles property
- * is 'roles' and the id of the user is "_id" (the default configuration values
- * of mongoRealAuthenticator)
+ * Just another Hello World program.
  *
  * @author Andrea Di Cesare <andrea@softinstigate.com>
  */
-@RegisterPlugin(name = "userVerifier",
-        description = "verifies user",
+@RegisterPlugin(name = "helloWorldService",
+        description = "just another Hello World program",
         defaultURI = "/srv")
-public class TestService implements JsonService {
+public class HelloWorldService implements JsonService {
     @Override
     public void handle(JsonRequest request, JsonResponse response)
             throws Exception {
