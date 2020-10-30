@@ -78,19 +78,35 @@
               </watch>
             </image>
             <image>
-              <alias>restheart</alias>
+              <alias>microd</alias>
               <name>softinstigate/microd:${project.version}</name>
               <build>
+
                 <from>softinstigate/restheart:latest</from>
+
                 <assembly>
-                  <inline>
+                  <name>microd-watcher</name>
+                  <descriptorRef>artifact</descriptorRef>
+                  <targetDir>/maven</targetDir>
+                  <mode>dir</mode>
+                  <!-- <descriptor>assembly.xml</descriptor> -->
+                </assembly>
+
+                <!-- <assembly>
+                  <name>microd-watcher</name>
+                  <targetDir>/maven</targetDir>
+                  <inline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
                     <fileSets>
+                      <directory>${project.basedir}/src/main/docker</directory>
+                      <outputDirectory>docker/</outputDirectory>
+                      <filtered>true</filtered>
                       <includes>
-                        <include>src/main/resources/watcher.txt</include>
+                        <include>target/</include>
                       </includes>
                     </fileSets>
                   </inline>
-                </assembly>
+                </assembly> -->
+
               </build>
               <run>
                 <env>
@@ -142,7 +158,7 @@
         <artifactId>fizzed-watcher-maven-plugin</artifactId>
         <version>1.0.6</version>
         <configuration>
-          <touchFile>src/main/resources/watcher.txt</touchFile>
+          <touchFile>${project.basedir}/src/main/docker/watcher.txt</touchFile>
           <watches>
             <watch>
               <directory>src/main/java</directory>
