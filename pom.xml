@@ -17,6 +17,13 @@
       <groupId>org.restheart</groupId>
       <artifactId>restheart-commons</artifactId>
       <version>5.1.5</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.10</version>
     </dependency>
   </dependencies>
 
@@ -24,20 +31,27 @@
     <finalName>${project.artifactId}</finalName>
     <plugins>
       <plugin>
-        <groupId>com.fizzed</groupId>
-        <artifactId>fizzed-watcher-maven-plugin</artifactId>
-        <version>1.0.6</version>
-        <configuration>
-          <touchFile>${project.basedir}/src/main/docker/watcher.txt</touchFile>
-          <watches>
-            <watch>
-              <directory>src/main/java</directory>
-            </watch>
-          </watches>
-          <goals>
-            <goal>package</goal>
-          </goals>
-        </configuration>
+        <!-- maven-dependency-plugin is used to copy the external dependencies
+        (i.e. that are not provided by restheart.jar) to target/lib 
+        see https://restheart.org/docs/plugins/deploy/ -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.2</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <!-- the following settings just include dependencies
+              of runtime and compile scopes -->
+              <excludeTransitive>true</excludeTransitive>
+              <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

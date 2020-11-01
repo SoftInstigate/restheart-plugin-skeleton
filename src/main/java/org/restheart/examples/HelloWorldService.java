@@ -20,6 +20,7 @@ package org.restheart.examples;
  * @author Andrea Di Cesare <andrea@softinstigate.com>
  */
 import com.google.gson.JsonObject;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.restheart.exchange.JsonRequest;
 import org.restheart.exchange.JsonResponse;
 import org.restheart.plugins.JsonService;
@@ -43,6 +44,7 @@ public class HelloWorldService implements JsonService {
         } else if (request.isGet()) {
             var resp = new JsonObject();
             resp.addProperty("msg", "Hello World!");
+            resp.addProperty("rnd", RandomStringUtils.randomAlphabetic(10));
             response.setContent(resp);
         } else {
             response.setStatusCode(HttpStatus.SC_NOT_IMPLEMENTED);

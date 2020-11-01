@@ -1,13 +1,5 @@
 # Roadmap
 
-## Share dependencies and restart on update
-
-Generate (not provided) dependencies in `target/lib`
-
-Add libs to container directory `/opt/restheart/plugins` via Docker volume
-
-Restart on libs change
-
 ## microD profile
 
 Provide alternative Dockerfile to run RESTHeart without MongoService

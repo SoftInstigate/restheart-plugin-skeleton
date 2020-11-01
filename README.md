@@ -21,7 +21,7 @@ $ brew install entr
 
 For Linux, please refer to [entr GitHub repo](https://github.com/eradman/entr). 
 
-entr is not available for Windows. You need to use the [Linux Subsystem](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+entr is not available for Windows. You need to use the [Linux Subsystem](https://docs.microsoft.com/en-us/windows/wsl/install-win10) to run the `watch.sh`.
 
 ## Start the server in development mode
 
@@ -46,6 +46,36 @@ The directory `etc` contains the configuration files that are shared with the RE
 
 When a configuration file is modified, the container RESTHeart is automatically restarted.
 
+## Dependencies
+
+The dependencies jars are copied by the `maven-dependency-plugin` to the `target/lib` directory. Those jars are added to the classpath of RESTHeart when the container starts.
+
+> When you add a dependency, you myst restart the RESTHeart container. The easiest way to do it is restarting `watch.sh`.
+
+### Avoid duplicate jars
+
+`restheart.jar` embeds several jars. You should avoid adding to the classpath a jar that is already included in it.
+
+You can avoid a dependency to be added to the classpath by specifying the scope `provided` in the pom dependency. For instance, the `restheart-commons` dependency has the scope `provided` because it is already embedded in `restheart.jar`:
+
+```xml
+<dependency>
+    <groupId>org.restheart</groupId>
+    <artifactId>restheart-commons</artifactId>
+    <version>5.1.5</version>
+    <scope>provided</scope>
+</dependency>
+```
+
+Other libraries that are embedded in `restheart.jar` are the MongoDB driver and Unirest http library.
+
+You can check which libraries are embedded in `restheart.jar` as follows:
+
+```bash
+$ git clone https://github.com/SoftInstigate/restheart.git && cd restheart
+$ mvn dependency:tree -Dscope=compile
+```
+
 ## ROADMAP
 
 Future improvements are documented in [ROADMAP.md](ROADMAP.md)
@@ -67,7 +97,7 @@ To jar filename, is defined in `pom.xml` as equal to the artifactId.
 </build>
 ```
 
-When you update the artifactId in the `pom.xml`, you need to update the volume section of the service restheart in the `docker-compose.yml` 
+When you update the artifactId in the `pom.xml`, you need to update the volume section of the service restheart in the `docker-compose.yml`
 
 From:
 

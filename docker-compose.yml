@@ -26,9 +26,9 @@ services:
             - "8080:8080"
             - "4000:4000"
         volumes:
-            - ./etc/:/opt/restheart/etc
-            - ./target/restheart-plugin-skeleton.jar:/opt/restheart/plugins/restheart-plugin-skeleton.jar
-
+            - ./etc/:/opt/restheart/etc:ro
+            - ./target/restheart-plugin-skeleton.jar:/opt/restheart/plugins/restheart-plugin-skeleton.jar:ro
+            - ./target/lib/.:/opt/restheart/lib:ro
     mongodb:
         image: mongo:4.2
         container_name: restheart-mongo
