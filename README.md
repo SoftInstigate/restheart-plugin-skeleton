@@ -6,6 +6,8 @@ Documentation for plugins development is available at [https://restheart.org/doc
 
 ### Requirements
 
+- Java 11+
+- Maven
 - Docker
 - entr
 
@@ -102,9 +104,3 @@ $ curl :8080/srv
 
 {"msg":"Hello World!"}%
 ```
-
-## Requirements
-
-- Java 11+
-- Maven 3.6+
-- Docker 1.8.1 (v1.20) is required for `docker:watch`
