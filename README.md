@@ -34,6 +34,10 @@ $ mvn clean package
 $ docker-compose up
 ```
 
+#### Init MongoDB
+
+The script `docker/docker-entrypoint-initdb.d/initdb.js` is executed by the mongo shell in the MongoDB container and allows initializing MongoDB, for instance creating test data.
+
 ### microD
 
 Use the `docker-compose-microd.yml` to start RESTHeart without the MongoDB Service. We call this profile **microD**, because it is an effective runtime environment for micro-services.
@@ -63,7 +67,7 @@ When a configuration file is modified, the container RESTHeart is automatically 
 
 The dependencies jars are copied by the `maven-dependency-plugin` to the `target/lib` directory. Those jars are added to the classpath of RESTHeart when the container starts.
 
-> When you add a dependency, you myst restart the RESTHeart container. The easiest way to do it is restarting `watch.sh`.
+> When you add a dependency, you must restart the RESTHeart container. The easiest way to do it is restarting `watch.sh`.
 
 ### Avoid duplicate jars
 
@@ -92,10 +96,6 @@ $ mvn dependency:tree -Dscope=compile
 ## ROADMAP
 
 Future improvements are documented in [ROADMAP.md](ROADMAP.md)
-
-## Init db
-
-the file `docker/docker-entrypoint-initdb.d/initdb.js` allows to init MongoDB
 
 ## How to change the jar filename
 
