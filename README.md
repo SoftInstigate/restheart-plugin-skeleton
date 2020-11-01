@@ -6,18 +6,31 @@ Documentation for plugins development is available at [https://restheart.org/doc
 
 ## Start the server in development mode
 
-You can get the project automatically rebuilt every time there is a change in the source code with the following maven command.
+Use the `docker-compose.yml` to start RESTHeart in development mode, i.e. with the JVM allowed to be remotely debugged on port 4000
 
-```
-$ mvn fizzed-watcher:run
-```
-
-You can also start the server with docker-compose and have the container updated and restarted every time the plugin jar is rebuilt.
-
-```
+```bash
 $ docker-compose up
-
 ```
+
+You can also use the `watch.sh` script, to have the project to automatically rebuilt, and the RESTHeart container automatically restarted whenever a source file changes.
+
+Use `watch.sh` after `docker-compose.up`
+
+```bash
+$ ./bin/watch.sh
+```
+
+### requirements for watch.sh
+
+The script `watch.sh` requires [entr](https://github.com/eradman/entr)
+
+You can install it on Mac with:
+
+```bash
+$ brew install entr
+```
+
+For other OSes, please refer to [entr GitHub repo](https://github.com/eradman/entr)
 
 ## TestService
 

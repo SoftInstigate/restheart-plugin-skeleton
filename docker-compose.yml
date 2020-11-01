@@ -15,9 +15,8 @@ volumes:
 
 services:
     restheart:
-        build: 
+        build:
             context: ./docker
-        restart: always
         container_name: restheart
         environment:
             MONGO_URI: mongodb://restheart:R3ste4rt!@restheart-mongo
@@ -28,8 +27,10 @@ services:
             - restheart-backend
         ports:
             - "8080:8080"
+            - "4000:4000"
         volumes:
-            - ./target/restheart-plugin-skeleton.jar:/opt/restheart/plugins/plugin.jar
+            # TODO add lib and document how to change the name of the plugin
+            - ./target/restheart-plugin-skeleton.jar:/opt/restheart/plugins/restheart-plugin-skeleton.jar
 
     mongodb:
         image: mongo:4.2
