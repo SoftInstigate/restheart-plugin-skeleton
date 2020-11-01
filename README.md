@@ -99,7 +99,7 @@ Future improvements are documented in [ROADMAP.md](ROADMAP.md)
 
 ## How to change the jar filename
 
-To jar filename, is defined in `pom.xml` as equal to the artifactId.
+The jar filename, is defined in `pom.xml` as equal to the artifactId.
 
 ```xml
 <artifactId>restheart-plugin-skeleton</artifactId>
