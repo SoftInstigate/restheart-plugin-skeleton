@@ -4,6 +4,23 @@ This repository provides a skeleton project to build RESTHeart Plugins.
 
 Documentation for plugins development is available at [https://restheart.org/docs/plugins/overview/](https://restheart.org/docs/plugins/overview/).
 
+### Requirements
+
+- Docker
+- entr
+
+The script `watch.sh` requires [entr](https://github.com/eradman/entr)
+
+You can install it on Mac with:
+
+```bash
+$ brew install entr
+```
+
+For Linux, please refer to [entr GitHub repo](https://github.com/eradman/entr). 
+
+entr is not available for Windows. You need to use the [Linux Subsystem](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+
 ## Start the server in development mode
 
 Use the `docker-compose.yml` to start RESTHeart in development mode, i.e. with the JVM allowed to be remotely debugged on port 4000
@@ -21,23 +38,11 @@ Use `watch.sh` after `docker-compose.up`
 $ ./bin/watch.sh
 ```
 
-## Configuration
+## RESTHeart Configuration
 
 The directory `etc` contains the configuration files that are shared with the RESTHeart via the directive `volume` in the `docker-compose.yml`.
 
 When a configuration file is modified, the container RESTHeart is automatically restarted.
-
-### requirements for watch.sh
-
-The script `watch.sh` requires [entr](https://github.com/eradman/entr)
-
-You can install it on Mac with:
-
-```bash
-$ brew install entr
-```
-
-For other OSes, please refer to [entr GitHub repo](https://github.com/eradman/entr)
 
 ## ROADMAP
 
