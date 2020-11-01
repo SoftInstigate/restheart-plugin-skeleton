@@ -1,0 +1,12 @@
+FROM softinstigate/restheart
+
+LABEL maintainer="SoftInstigate <info@softinstigate.com>"
+
+WORKDIR /opt/restheart
+COPY restheart.sh ./microd.sh
+
+RUN rm /opt/restheart/plugins/restheart-mongodb.jar
+
+ENTRYPOINT [ "/opt/restheart/microd.sh" ]
+
+EXPOSE 8080 4000

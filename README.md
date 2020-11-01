@@ -19,20 +19,33 @@ You can install it on Mac with:
 $ brew install entr
 ```
 
-For Linux, please refer to [entr GitHub repo](https://github.com/eradman/entr). 
+For Linux, please refer to [entr GitHub repo](https://github.com/eradman/entr).
 
 entr is not available for Windows. You need to use the [Linux Subsystem](https://docs.microsoft.com/en-us/windows/wsl/install-win10) to run the `watch.sh`.
 
 ## Start the server in development mode
 
+### RESTHeart
+
 Use the `docker-compose.yml` to start RESTHeart in development mode, i.e. with the JVM allowed to be remotely debugged on port 4000
 
 ```bash
-$ mvn package
+$ mvn clean package
 $ docker-compose up
 ```
 
-You can also use the `watch.sh` script, to have the project to automatically rebuilt, and the RESTHeart container automatically restarted whenever a source or configuration file changes.
+### microD
+
+Use the `docker-compose-microd.yml` to start RESTHeart without the MongoDB Service. We call this profile **microD**, because it is an effective runtime environment for micro-services.
+
+```bash
+$ mvn package
+$ docker-compose -f docker-compose-microd.yml up
+```
+
+### Watch: automatic rebuilding and restarting
+
+You can use the `watch.sh` script, to have the project automatically rebuilt, and the RESTHeart container automatically restarted whenever a source or configuration file changes.
 
 Use `watch.sh` after `docker-compose.up`
 

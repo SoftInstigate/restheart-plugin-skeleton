@@ -1,9 +1,5 @@
 # Roadmap
 
-## microD profile
-
-Provide alternative Dockerfile to run RESTHeart without MongoService
-
 ## Kotlin
 
 Provide example service in Kotlin
