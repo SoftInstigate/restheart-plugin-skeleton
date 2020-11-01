@@ -29,7 +29,6 @@ services:
             - "8080:8080"
             - "4000:4000"
         volumes:
-            # TODO add lib and document how to change the name of the plugin
             - ./target/restheart-plugin-skeleton.jar:/opt/restheart/plugins/restheart-plugin-skeleton.jar
 
     mongodb:

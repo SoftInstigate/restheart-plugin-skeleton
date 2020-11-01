@@ -9,6 +9,7 @@ Documentation for plugins development is available at [https://restheart.org/doc
 Use the `docker-compose.yml` to start RESTHeart in development mode, i.e. with the JVM allowed to be remotely debugged on port 4000
 
 ```bash
+$ mvn package
 $ docker-compose up
 ```
 
@@ -31,6 +32,10 @@ $ brew install entr
 ```
 
 For other OSes, please refer to [entr GitHub repo](https://github.com/eradman/entr)
+
+## ROADMAP
+
+Future improvements are documented in [ROADMAP.md](ROADMAP.md)
 
 ## TestService
 
