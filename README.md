@@ -47,6 +47,35 @@ Future improvements are documented in [ROADMAP.md](ROADMAP.md)
 
 the file `docker/docker-entrypoint-initdb.d/initdb.js` allows to init MongoDB
 
+## How to change the jar filename
+
+To jar filename, is defined in `pom.xml` as equal to the artifactId.
+
+```xml
+<artifactId>restheart-plugin-skeleton</artifactId>
+...
+<build>
+ <finalName>${project.artifactId}</finalName>
+ ...
+</build>
+```
+
+When you update the artifactId in the `pom.xml`, you need to update the volume section of the service restheart in the `docker-compose.yml` 
+
+From:
+
+```yml
+volumes:
+    - ./target/restheart-plugin-skeleton.jar:/opt/restheart/plugins/restheart-plugin-skeleton.jar
+```
+
+To:
+
+```yml
+volumes:
+ - ./target/<your-artifactId>.jar:/opt/restheart/plugins/<your-artifactId>.jar
+```
+
 ## TestService
 
 The code includes a super simple "Hello World" service. You can test it as follows:
