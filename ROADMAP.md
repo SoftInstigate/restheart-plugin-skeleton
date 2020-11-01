@@ -1,10 +1,6 @@
 # Roadmap
 
-## etc files on host
-
-Mount etc files via docker volume to allow easy reconfiguration. automatic restart on configuration file changes.
-
-## Restart on dependencies update
+## Share dependencies and restart on update
 
 Generate (not provided) dependencies in `target/lib`
 

@@ -13,13 +13,19 @@ $ mvn package
 $ docker-compose up
 ```
 
-You can also use the `watch.sh` script, to have the project to automatically rebuilt, and the RESTHeart container automatically restarted whenever a source file changes.
+You can also use the `watch.sh` script, to have the project to automatically rebuilt, and the RESTHeart container automatically restarted whenever a source or configuration file changes.
 
 Use `watch.sh` after `docker-compose.up`
 
 ```bash
 $ ./bin/watch.sh
 ```
+
+## Configuration
+
+The directory `etc` contains the configuration files that are shared with the RESTHeart via the directive `volume` in the `docker-compose.yml`.
+
+When a configuration file is modified, the container RESTHeart is automatically restarted.
 
 ### requirements for watch.sh
 
@@ -36,6 +42,10 @@ For other OSes, please refer to [entr GitHub repo](https://github.com/eradman/en
 ## ROADMAP
 
 Future improvements are documented in [ROADMAP.md](ROADMAP.md)
+
+## Init db
+
+the file `docker/docker-entrypoint-initdb.d/initdb.js` allows to init MongoDB
 
 ## TestService
 

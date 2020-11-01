@@ -1,0 +1,1 @@
+db.coll.insert({ a: 1, description: "created by init script docker-entrypoint-initdb.d/initdb.js"});

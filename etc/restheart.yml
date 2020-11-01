@@ -251,12 +251,10 @@ authorizers:
  # autheticates successfully. The token can be used by Authentication Mechanisms.
 
 token-manager:
-  jwtTokenManager:
-    key: secret
+  rndTokenManager:
     enabled: true
     ttl: 15
     srv-uri: /tokens
-    issuer: restheart.com
 
 ## Aggregations variables
 

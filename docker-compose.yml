@@ -18,9 +18,6 @@ services:
         build:
             context: ./docker
         container_name: restheart
-        environment:
-            MONGO_URI: mongodb://restheart:R3ste4rt!@restheart-mongo
-        command: ["--envFile", "/opt/restheart/etc/default.properties"]
         depends_on:
             - mongodb
         networks:
@@ -29,6 +26,7 @@ services:
             - "8080:8080"
             - "4000:4000"
         volumes:
+            - ./etc/:/opt/restheart/etc
             - ./target/restheart-plugin-skeleton.jar:/opt/restheart/plugins/restheart-plugin-skeleton.jar
 
     mongodb:
@@ -36,10 +34,12 @@ services:
         container_name: restheart-mongo
         command: ["--bind_ip", "restheart-mongo", "--auth", "--replSet", "rs0"]
         environment:
+            MONGO_INITDB_DATABASE: restheart
             MONGO_INITDB_ROOT_USERNAME: restheart
             MONGO_INITDB_ROOT_PASSWORD: R3ste4rt!
         volumes:
             - restheart-mongo-volume:/data/db
+            - ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
         networks:
             - restheart-backend
 
