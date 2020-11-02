@@ -40,13 +40,13 @@ The script `docker/docker-entrypoint-initdb.d/initdb.js` is executed by the mong
 
 #### Get notified when container restheart
 
-The following command can be used to get notified on MAc when the RESTHeart container restarted.
+The following command can be used to get notified on OSX when the RESTHeart container is restarted.
 
 ```bash
 & docker-compose up | awk '/RESTHeart started/ { system("./bin/notify_osx.sh RESTHeart restarted") } /.*/'
 ```
 
-You can tweak the command for linux. Have a look at [this article](https://superuser.com/questions/31917/is-there-a-way-to-show-notification-from-bash-script-in-ubuntu) for some ideas
+If you are on Linux, you can tweak the command (`notify_osx.sh` is specific for OSX). Have a look at [this article](https://superuser.com/questions/31917/is-there-a-way-to-show-notification-from-bash-script-in-ubuntu) for some ideas. 
 
 ### microD
 
@@ -62,6 +62,7 @@ And with notifications:
 ```bash
 & docker-compose -f docker-compose-microd.yml up | awk '/RESTHeart stopped/ { system("./bin/notify_osx.sh RESTHeart stopped") } /RESTHeart started/ { system("./bin/notify_osx.sh RESTHeart started") }  /.*/'
 ```
+
 ## Watch: automatic rebuilding and restarting
 
 You can use the `watch.sh` script, to have the project automatically rebuilt, and the RESTHeart container automatically restarted whenever a source or configuration file changes.
@@ -83,6 +84,8 @@ For even quicker code modifications, you can stop the script `watch.sh`, attach 
 ```bash
 $ ./bin/watch.sh | awk '/BUILD SUCCESS/ { system("./bin/notify_osx.sh RESTHeart build:success") } /BUILD FAILURE/ { system("./bin/notify_osx.sh RESTHeart build:failure") } /Building / { system("./bin/notify_osx.sh RESTHeart building...") } /.*/'
 ```
+
+If you are on Linux, you can tweak the command (`notify_osx.sh` is specific for OSX). Have a look at [this article](https://superuser.com/questions/31917/is-there-a-way-to-show-notification-from-bash-script-in-ubuntu) for some ideas.
 
 ## RESTHeart Configuration
 
