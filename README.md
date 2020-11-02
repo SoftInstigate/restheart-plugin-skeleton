@@ -38,6 +38,16 @@ $ docker-compose up
 
 The script `docker/docker-entrypoint-initdb.d/initdb.js` is executed by the mongo shell in the MongoDB container and allows initializing MongoDB, for instance creating test data.
 
+#### Get notified when container restheart
+
+The following command can be used to get notified on MAc when the RESTHeart container restarted.
+
+```bash
+& docker-compose up | awk '/RESTHeart started/ { system("./bin/notify_osx.sh") }'
+```
+
+You can tweak the command for linux. Have a look at [this article](https://superuser.com/questions/31917/is-there-a-way-to-show-notification-from-bash-script-in-ubuntu) for some ideas
+
 ### microD
 
 Use the `docker-compose-microd.yml` to start RESTHeart without the MongoDB Service. We call this profile **microD**, because it is an effective runtime environment for micro-services.
