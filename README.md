@@ -43,7 +43,7 @@ The script `docker/docker-entrypoint-initdb.d/initdb.js` is executed by the mong
 The following command can be used to get notified on MAc when the RESTHeart container restarted.
 
 ```bash
-& docker-compose up | awk '/RESTHeart started/ { system("./bin/notify_osx.sh RESTHeart restarted") /.*/ }'
+& docker-compose up | awk '/RESTHeart started/ { system("./bin/notify_osx.sh RESTHeart restarted") } /.*/'
 ```
 
 You can tweak the command for linux. Have a look at [this article](https://superuser.com/questions/31917/is-there-a-way-to-show-notification-from-bash-script-in-ubuntu) for some ideas
@@ -71,6 +71,12 @@ Use `watch.sh` after `docker-compose.up`
 ```bash
 $ ./bin/watch.sh
 ```
+
+## Hot Code Replace
+
+The RESTHeart container uses the Java virtual machine (dcevm)(http://dcevm.github.io), that allows extended Hot Code Replace.
+
+For even quicker code modifications, you can stop the script `watch.sh`, attach the debugger (on port 4000) and use the Hot Code Replace feature of your IDE.
 
 ### Get notified when building
 
