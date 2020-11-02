@@ -157,6 +157,15 @@ volumes:
 
 The code includes a super simple "Hello World" service. You can test it as follows:
 
+**HTTP Shell**
+
+> download HTTP Shell from [GitHub](https://github.com/SoftInstigate/http-shell/releases)
+
+```bash
+> h set url :8080
+> h get /srv
+```
+
 **httpie**
 
 ```bash
