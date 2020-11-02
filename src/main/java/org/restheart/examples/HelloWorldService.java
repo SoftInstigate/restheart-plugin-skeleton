@@ -33,7 +33,7 @@ import org.restheart.utils.HttpStatus;
  * @author Andrea Di Cesare <andrea@softinstigate.com>
  */
 @RegisterPlugin(name = "helloWorldService",
-        description = "just another Hello World program x",
+        description = "just another Hello World program",
         defaultURI = "/srv")
 public class HelloWorldService implements JsonService {
     @Override

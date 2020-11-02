@@ -1,3 +1,3 @@
 #!/bin/sh
 
-osascript -e "display notification \"Go and try\" with title \"RESTHeart restarted\""
+osascript -e "display notification \"$2\" with title \"$1\""

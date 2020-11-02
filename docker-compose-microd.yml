@@ -22,3 +22,10 @@ services:
             - ./etc/:/opt/restheart/etc:ro
             - ./target/restheart-plugin-skeleton.jar:/opt/restheart/plugins/restheart-plugin-skeleton.jar:ro
             - ./target/lib/.:/opt/restheart/lib:ro
+
+    # this small container is here just to keep docker-compose logging when restheart container restarts
+    dummy:
+        container_name: dummy
+        image: alpine:3.7
+        command: tail -f /dev/null
+        init: true

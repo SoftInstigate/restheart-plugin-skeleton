@@ -18,7 +18,6 @@ services:
         build:
             context: ./docker
         container_name: restheart
-        restart: always
         depends_on:
             - mongodb
         networks:
