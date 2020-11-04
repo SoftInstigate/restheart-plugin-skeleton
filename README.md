@@ -75,7 +75,7 @@ $ ./bin/watch.sh
 
 ## Hot Code Replace
 
-The RESTHeart container uses the Java virtual machine (dcevm)(http://dcevm.github.io), that allows extended Hot Code Replace.
+The RESTHeart container uses the Java virtual machine [dcevm](http://dcevm.github.io), that allows extended Hot Code Replace.
 
 For even quicker code modifications, you can stop the script `watch.sh`, attach the debugger (on port 4000) and use the Hot Code Replace feature of your IDE.
 
