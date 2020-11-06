@@ -53,9 +53,10 @@ public class HelloWorldService implements JsonService {
             // RandomStringUtils is from Apache commons-lang3 library
             // This is an external dependency i.e. it is not provided by restheart.jar,
             // and thus it must be added to the classpath for the service to work.
-            // All (not provided) dependencies are copied to target/lib by the maven-dependency-plugin
-            // and copied to the plugins directory of RESTHeart to add it to the classpath
+            // All (not provided) dependenies are copied to target/lib by the maven-dependency-plugin
+            // and then copied to the plugins directory to add them to the classpath
             // by the script restart.sh
+            // See https://github.com/SoftInstigate/restheart-plugin-skeleton/blob/master/README.md#dependencies
             resp.addProperty("rnd", RandomStringUtils.randomAlphabetic(10));
             response.setContent(resp);
         } else {

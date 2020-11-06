@@ -109,9 +109,9 @@ When a configuration file is modified, the container RESTHeart is automatically 
 
 ## Dependencies
 
-The dependencies jars are copied by the `maven-dependency-plugin` to the `target/lib` directory. Those jars are added to the classpath of RESTHeart when the container starts.
+The dependencies jars are copied by the `maven-dependency-plugin` to the `target/lib` directory. Those jars are copied to the RESTHeart's `plugins` directory to add them to to the classpath by the script `bin/resthart.sh`.
 
-> When you add a dependency, you must restart the RESTHeart container. The easiest way to do it is restarting `watch.sh`.
+> When you add a dependency, you must restart the RESTHeart container.
 
 ### Avoid duplicate jars
 
@@ -136,10 +136,6 @@ You can check which libraries are embedded in `restheart.jar` as follows:
 $ git clone https://github.com/SoftInstigate/restheart.git && cd restheart
 $ mvn dependency:tree -Dscope=compile
 ```
-
-## ROADMAP
-
-Future improvements are documented in [ROADMAP.md](ROADMAP.md)
 
 ## How to change the jar filename
 
