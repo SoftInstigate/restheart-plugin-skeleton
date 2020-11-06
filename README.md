@@ -64,7 +64,7 @@ $ ./bin/restart.sh -p microd
 You can use docker-compose to run MongoDB
 
 ```bash
-& docker-compose up -d
+$ docker-compose up -d
 ```
 
 > docker-compose runs MongoDB as a single instance replica set. This is required for transactions and change streams to work.
