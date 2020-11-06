@@ -20,6 +20,7 @@ package org.restheart.examples;
  * @author Andrea Di Cesare <andrea@softinstigate.com>
  */
 import com.google.gson.JsonObject;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.restheart.exchange.JsonRequest;
 import org.restheart.exchange.JsonResponse;
@@ -32,18 +33,29 @@ import org.restheart.utils.HttpStatus;
  *
  * @author Andrea Di Cesare <andrea@softinstigate.com>
  */
-@RegisterPlugin(name = "helloWorldService",
-        description = "just another Hello World program",
-        defaultURI = "/srv")
+@RegisterPlugin(name = "helloWorldService", description = "just another Hello World program", defaultURI = "/srv")
 public class HelloWorldService implements JsonService {
     @Override
-    public void handle(JsonRequest request, JsonResponse response)
-            throws Exception {
+    public void handle(JsonRequest request, JsonResponse response) throws Exception {
         if (request.isOptions()) {
             handleOptions(request);
         } else if (request.isGet()) {
             var resp = new JsonObject();
-            resp.addProperty("msg", "Hello World!");
+            // the wrapped undertow's HttpServerExchange allows getting the query paramters
+            var name = request.getExchange().getQueryParameters().get("name");
+
+            if (name == null) {
+                resp.addProperty("msg", "Hello World!");
+            } else {
+                resp.addProperty("msg", "Hello ".concat(name.getFirst()));
+            }
+
+            // RandomStringUtils is from Apache commons-lang3 library
+            // This is an external dependency i.e. it is not provided by restheart.jar,
+            // and thus it must be added to the classpath for the service to work.
+            // All (not provided) dependencies are copied to target/lib by the maven-dependency-plugin
+            // and copied to the plugins directory of RESTHeart to add it to the classpath
+            // by the script restart.sh
             resp.addProperty("rnd", RandomStringUtils.randomAlphabetic(10));
             response.setContent(resp);
         } else {
