@@ -8,8 +8,8 @@ Documentation for plugins development is available at [https://restheart.org/doc
 
 - Java 11+
 - Maven
-- Docker
-- entr
+- entr (for watch script)
+- Docker (to start MongoDB with docker-compose)
 
 The script `watch.sh` requires [entr](https://github.com/eradman/entr)
 
@@ -23,75 +23,89 @@ For Linux, please refer to [entr GitHub repo](https://github.com/eradman/entr).
 
 entr is not available for Windows. You need to use the [Linux Subsystem](https://docs.microsoft.com/en-us/windows/wsl/install-win10) to run the `watch.sh`.
 
-## Start the server in development mode
+## Start RESTHeart in development mode
 
-### RESTHeart
-
-Use the `docker-compose.yml` to start RESTHeart in development mode, i.e. with the JVM allowed to be remotely debugged on port 4000
+Use the script `./bin/restart.sh` to start the latest release of RESTHeart in development mode, i.e. run with the DCEVM JVM and enabled for debugging on port 4000
 
 ```bash
 $ mvn clean package
-$ docker-compose up
+$ ./bin/restart.sh -p restheart
 ```
+
+> the script automatically deploys the plugin to RESTHeart
+
+> the script automatically downloads RESTHeart and the DCEVM JVM in the `.cache` directory. Delete `.cache` and rerun the script to update RESTHeart to latest release.
+
+You can check the log file with `tail -f /usr/local/var/log/restheart.log`
+
+> log file path is set in `etc/dev.properties`
+
+#### Get notified when RESTHeart restarts
+
+The following command can be used to get notified on OSX when RESTHeart is restarted by the script `bin/watch.sh`.
+
+```bash
+& tail -f /usr/local/var/log/restheart.log | awk '/RESTHeart stopped/ { system("./bin/notify_osx.sh RESTHeart stopped") } /RESTHeart started/ { system("./bin/notify_osx.sh RESTHeart started") } /.*/'
+```
+
+If you are on Linux, you can tweak the command (`notify_osx.sh` is specific for OSX). Have a look at [this article](https://superuser.com/questions/31917/is-there-a-way-to-show-notification-from-bash-script-in-ubuntu) for some ideas.
+
+### microD profile
+
+Use the profile `microd` to start RESTHeart without the MongoDB Service. We call this profile **microD**, because it is an effective runtime environment for micro-services.
+
+```bash
+$ mvn clean package
+$ ./bin/restart.sh -p microd
+```
+
+### MongoDB
+
+You can use docker-compose to run MongoDB
+
+```bash
+& docker-compose up -d
+```
+
+> docker-compose runs MongoDB as a single instance replica set. This is required for transactions and change streams to work.
 
 #### Init MongoDB
 
 The script `docker/docker-entrypoint-initdb.d/initdb.js` is executed by the mongo shell in the MongoDB container and allows initializing MongoDB, for instance creating test data.
 
-#### Get notified when container restheart
-
-The following command can be used to get notified on OSX when the RESTHeart container is restarted.
-
-```bash
-& docker-compose up | awk '/RESTHeart started/ { system("./bin/notify_osx.sh RESTHeart restarted") } /.*/'
-```
-
-If you are on Linux, you can tweak the command (`notify_osx.sh` is specific for OSX). Have a look at [this article](https://superuser.com/questions/31917/is-there-a-way-to-show-notification-from-bash-script-in-ubuntu) for some ideas. 
-
-### microD
-
-Use the `docker-compose-microd.yml` to start RESTHeart without the MongoDB Service. We call this profile **microD**, because it is an effective runtime environment for micro-services.
-
-```bash
-$ mvn package
-$ docker-compose -f docker-compose-microd.yml up
-```
-
-And with notifications:
-
-```bash
-& docker-compose -f docker-compose-microd.yml up | awk '/RESTHeart stopped/ { system("./bin/notify_osx.sh RESTHeart stopped") } /RESTHeart started/ { system("./bin/notify_osx.sh RESTHeart started") }  /.*/'
-```
-
 ## Watch: automatic rebuilding and restarting
 
-You can use the `watch.sh` script, to have the project automatically rebuilt, and the RESTHeart container automatically restarted whenever a source or configuration file changes.
-
-Use `watch.sh` after `docker-compose.up`
+You can use the script `bin/watch.sh`, to have the project automatically rebuilt, and RESTHeart automatically restarted whenever a source or configuration file changes.
 
 ```bash
-$ ./bin/watch.sh
+$ ./bin/watch.sh -p restheart
+```
+
+Or
+
+```bash
+$ ./bin/watch.sh -p microd
+```
+
+#### Get building notifications on OSX
+
+The following command can be used to get notified on OSX when about building events triggered by the script `bin/watch.sh`
+
+```bash
+$ ./bin/watch.sh -p restheart | awk '/BUILD SUCCESS/ { system("./bin/notify_osx.sh RESTHeart build:success") } /BUILD FAILURE/ { system("./bin/notify_osx.sh RESTHeart build:failure") } /Building / { system("./bin/notify_osx.sh RESTHeart building...") } /.*/'
 ```
 
 ## Hot Code Replace
 
-The RESTHeart container uses the Java virtual machine [dcevm](http://dcevm.github.io), that allows extended Hot Code Replace.
+The script `bin/restart.sh` runs RESTHeart with the Java Virtual Machine (dcevm)(http://dcevm.github.io), that features *extended Hot Code Replace*.
 
-For even quicker code modifications, you can stop the script `watch.sh`, attach the debugger (on port 4000) and use the Hot Code Replace feature of your IDE.
-
-### Get notified when building
-
-```bash
-$ ./bin/watch.sh | awk '/BUILD SUCCESS/ { system("./bin/notify_osx.sh RESTHeart build:success") } /BUILD FAILURE/ { system("./bin/notify_osx.sh RESTHeart build:failure") } /Building / { system("./bin/notify_osx.sh RESTHeart building...") } /.*/'
-```
-
-If you are on Linux, you can tweak the command (`notify_osx.sh` is specific for OSX). Have a look at [this article](https://superuser.com/questions/31917/is-there-a-way-to-show-notification-from-bash-script-in-ubuntu) for some ideas.
+For even quicker code modifications, you can stop the script `bin/watch.sh`, attach the debugger (on port 4000) to use the Hot Code Replace feature of your IDE.
 
 ## RESTHeart Configuration
 
-The directory `etc` contains the configuration files that are shared with the RESTHeart via the directive `volume` in the `docker-compose.yml`.
+The directory `etc` contains the configuration files that are used by the script `bin/restheart.sh`.
 
-When a configuration file is modified, the container RESTHeart is automatically restarted.
+When a configuration file is modified, the container RESTHeart is automatically restarted by the script `bin/watch.sh`.
 
 ## Dependencies
 
@@ -138,22 +152,6 @@ The jar filename, is defined in `pom.xml` as equal to the artifactId.
  <finalName>${project.artifactId}</finalName>
  ...
 </build>
-```
-
-When you update the artifactId in the `pom.xml`, you need to update the volume section of the service restheart in the `docker-compose.yml`
-
-From:
-
-```yml
-volumes:
-    - ./target/restheart-plugin-skeleton.jar:/opt/restheart/plugins/restheart-plugin-skeleton.jar
-```
-
-To:
-
-```yml
-volumes:
- - ./target/<your-artifactId>.jar:/opt/restheart/plugins/<your-artifactId>.jar
 ```
 
 ## TestService

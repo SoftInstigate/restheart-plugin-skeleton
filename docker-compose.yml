@@ -14,34 +14,19 @@ volumes:
    restheart-mongo-volume:
 
 services:
-    restheart:
-        build:
-            context: ./docker
-        container_name: restheart
-        depends_on:
-            - mongodb
-        networks:
-            - restheart-backend
-        ports:
-            - "8080:8080"
-            - "4000:4000"
-        volumes:
-            - ./etc/:/opt/restheart/etc:ro
-            - ./target/restheart-plugin-skeleton.jar:/opt/restheart/plugins/restheart-plugin-skeleton.jar:ro
-            - ./target/lib/.:/opt/restheart/lib:ro
     mongodb:
         image: mongo:4.2
         container_name: restheart-mongo
-        command: ["--bind_ip", "restheart-mongo", "--auth", "--replSet", "rs0"]
+        command: ["--bind_ip", "restheart-mongo", "--replSet", "rs0"]
         environment:
             MONGO_INITDB_DATABASE: restheart
-            MONGO_INITDB_ROOT_USERNAME: restheart
-            MONGO_INITDB_ROOT_PASSWORD: R3ste4rt!
         volumes:
             - restheart-mongo-volume:/data/db
             - ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
         networks:
             - restheart-backend
+        ports:
+            - "27017:27017"
 
 ### Initiate MongoDB as a single node replica set
     mongodb-initiate:

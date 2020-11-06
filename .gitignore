@@ -11,6 +11,7 @@
 .vscode/
 .classpath
 .settings
+.cache
 
 # User-specific stuff
 .idea/**/workspace.xml

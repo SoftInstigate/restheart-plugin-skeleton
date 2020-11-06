@@ -226,6 +226,8 @@ plugins-args:
     enabled: false
     uri: /echo
     secured: false
+  changeStreamActivator:
+    enabled: false
 
 #### Logging
 
