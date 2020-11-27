@@ -41,8 +41,7 @@ public class HelloWorldService implements JsonService {
             handleOptions(request);
         } else if (request.isGet()) {
             var resp = new JsonObject();
-            // the wrapped undertow's HttpServerExchange allows getting the query paramters
-            var name = request.getExchange().getQueryParameters().get("name");
+            var name = request.getQueryParameters().get("name");
 
             if (name == null) {
                 resp.addProperty("msg", "Hello World!");
