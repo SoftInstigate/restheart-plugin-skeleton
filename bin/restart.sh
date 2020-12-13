@@ -53,9 +53,9 @@ done
 if [ ! -d ".cache" ]
 then
     if [ "$(uname)" == "Darwin" ]; then
-        DCEVM_URL=https://github.com/TravaOpenJDK/trava-jdk-11-dcevm/releases/download/dcevm-11.0.9%2B1/java11-openjdk-dcevm-osx.tar.gz
+        DCEVM_URL=https://github.com/TravaOpenJDK/trava-jdk-11-dcevm/releases/download/dcevm-11.0.9%2B2/java11-openjdk-dcevm-osx.tar.gz
     else
-        DCEVM_URL=https://github.com/TravaOpenJDK/trava-jdk-11-dcevm/releases/download/dcevm-11.0.9%2B1/java11-openjdk-dcevm-linux.tar.gz
+        DCEVM_URL=https://github.com/TravaOpenJDK/trava-jdk-11-dcevm/releases/download/dcevm-11.0.9%2B2/java11-openjdk-dcevm-linux.tar.gz
     fi
 
     echo **** Downloading RESTHeart..
