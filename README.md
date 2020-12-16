@@ -97,7 +97,7 @@ $ ./bin/watch.sh -p restheart | awk '/BUILD SUCCESS/ { system("./bin/notify_osx.
 
 ## Hot Code Replace
 
-The script `bin/restart.sh` runs RESTHeart with the Java Virtual Machine (dcevm)(http://dcevm.github.io), that features *extended Hot Code Replace*.
+The script `bin/restart.sh` runs RESTHeart with the Java Virtual Machine [DCEVM](http://dcevm.github.io), that features *extended Hot Code Replace*.
 
 For even quicker code modifications, you can stop the script `bin/watch.sh`, attach the debugger (on port 4000) to use the Hot Code Replace feature of your IDE.
 
