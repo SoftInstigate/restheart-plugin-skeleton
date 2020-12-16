@@ -35,4 +35,4 @@ services:
          - restheart-backend
       depends_on:
          - mongodb
-      entrypoint: bash -c "for i in {1..100}; do mongo  --host mongodb --username restheart --password 'R3ste4rt!' --eval 'if (!rs.status().ok) rs.initiate();' && break || sleep 2; done"
+      entrypoint: bash -c "for i in {1..100}; do mongo  --host mongodb --eval 'if (!rs.status().ok) rs.initiate();' && break || sleep 2; done"
