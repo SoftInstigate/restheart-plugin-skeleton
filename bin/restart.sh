@@ -72,9 +72,9 @@ cp $CD/etc/*.properties .cache/restheart/etc
 cp $CD/etc/*.yml .cache/restheart/etc
 
 if [ "$(uname)" == "Darwin" ]; then
-    JAVA_BIN=$CD/.cache/dcevm-11.0.9+1/Contents/Home/bin
+    JAVA_BIN=$CD/.cache/dcevm-11.0.9+2/Contents/Home/bin
 else
-    JAVA_BIN=$CD/.cache/dcevm-11.0.9+1/bin
+    JAVA_BIN=$CD/.cache/dcevm-11.0.9+2/bin
 fi
 
 echo Killing restheart
