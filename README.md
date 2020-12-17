@@ -36,7 +36,7 @@ $ ./bin/restart.sh -p restheart
 
 > the script automatically downloads RESTHeart and the DCEVM JVM in the `.cache` directory. Delete `.cache` and rerun the script to update RESTHeart to latest release.
 
-You can check the log file with `tail -f /usr/local/var/log/restheart.log`
+You can check the log file with `tail -f restheart.log`
 
 > log file path is set in `etc/dev.properties`
 
@@ -72,6 +72,11 @@ $ docker-compose up -d
 #### Init MongoDB
 
 The script `docker/docker-entrypoint-initdb.d/initdb.js` is executed by the mongo shell in the MongoDB container and allows initializing MongoDB, for instance creating test data.
+
+## Stop RESTHeart
+
+Use the script `./bin/stop.sh` to stop the instance of RESTHeart running in development mode with the DCEVM JVM.
+
 
 ## Watch: automatic rebuilding and restarting
 
