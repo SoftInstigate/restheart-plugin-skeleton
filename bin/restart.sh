@@ -26,6 +26,15 @@ while getopts ":p:" o; do
             profile=${OPTARG}
             case "${OPTARG}" in
                 restheart)
+                    curl -s -o /dev/null :27017; mongodb_running=$?
+
+                    if [ $mongodb_running != 0 ]; then
+                        echo It looks like mongodb is not running on port 27017.
+                        echo You can start it with:
+                        echo \> docker-compose up -d
+                        exit 1
+                    fi
+
                     opts_flag=1
                     CONFIG_FILE=etc/restheart.yml
                     [ -f $RH/plugins/restheart-mongodb.disabled ] &&  mv $RH/plugins/restheart-mongodb.disabled $RH/plugins/restheart-mongodb.jar
@@ -66,15 +75,6 @@ then
     curl -L $DCEVM_URL > dcevm.tar.gz
     tar -xzf dcevm.tar.gz
     cd ..
-fi
-
-curl -s -o /dev/null :27017; mongodb_running=$?
-
-if [ $mongodb_running != 0 ]; then
-    echo It looks like mongodb is not running on port 27017.
-    echo You can start it with:
-    echo \> docker-compose up -d
-    exit 1
 fi
 
 cp $CD/etc/*.properties .cache/restheart/etc
