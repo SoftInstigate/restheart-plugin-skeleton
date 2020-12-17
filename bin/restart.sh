@@ -26,7 +26,7 @@ while getopts ":p:" o; do
             profile=${OPTARG}
             case "${OPTARG}" in
                 restheart)
-                    curl -s -o /dev/null :27017; mongodb_running=$?
+                    curl -s -o /dev/null localhost:27017; mongodb_running=$?
 
                     if [ $mongodb_running != 0 ]; then
                         echo It looks like mongodb is not running on port 27017.
