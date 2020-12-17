@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 function help_message() {
     echo "Usage: $0 -p <profile>"
