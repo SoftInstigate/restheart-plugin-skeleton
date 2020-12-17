@@ -108,13 +108,13 @@ For even quicker code modifications, you can stop the script `bin/watch.sh`, att
 
 ## RESTHeart Configuration
 
-The directory `etc` contains the configuration files that are used by the script `bin/restheart.sh`.
+The directory `etc` contains the configuration files that are used by the script `bin/restart.sh`.
 
 When a configuration file is modified, the container RESTHeart is automatically restarted by the script `bin/watch.sh`.
 
 ## Dependencies
 
-The dependencies jars are copied by the `maven-dependency-plugin` to the `target/lib` directory. Those jars are copied to the RESTHeart's `plugins` directory to add them to to the classpath by the script `bin/resthart.sh`.
+The dependencies jars are copied by the `maven-dependency-plugin` to the `target/lib` directory. Those jars are copied to the RESTHeart's `plugins` directory to add them to to the classpath by the script `bin/restart.sh`.
 
 > When you add a dependency, you must restart the RESTHeart container.
 
