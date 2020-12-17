@@ -12,6 +12,7 @@
 .classpath
 .settings
 .cache
+restheart.log
 
 # User-specific stuff
 .idea/**/workspace.xml

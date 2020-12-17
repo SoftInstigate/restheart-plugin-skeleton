@@ -68,6 +68,15 @@ then
     cd ..
 fi
 
+curl -s -o /dev/null :27017; mongodb_running=$?
+
+if [ $mongodb_running != 0 ]; then
+    echo It looks like mongodb is not running on port 27017.
+    echo You can start it with:
+    echo \> docker-compose up -d
+    exit 1
+fi
+
 cp $CD/etc/*.properties .cache/restheart/etc
 cp $CD/etc/*.yml .cache/restheart/etc
 
@@ -78,16 +87,16 @@ else
 fi
 
 echo Killing restheart
-kill -9 `lsof -t -i:8080` 2> /dev/null || echo .. > /dev/null
+kill `lsof -t -i:8080` 2> /dev/null || echo .. > /dev/null
 
 echo Deploying plugin
 cp target/*.jar $RH/plugins
 cp target/lib/*.jar $RH/plugins
 
-LOG_FILE=/usr/local/var/log/restheart.log
+LOG_FILE=$CD/restheart.log
 
 echo Starting restheart, check log with:
-echo \> tail -f $LOG_FILE
-echo \> tail -f $LOG_FILE \| awk \'/RESTHeart stopped/ \{ system\(\"./bin/notify_osx.sh RESTHeart stopped\"\) \} /RESTHeart started/ \{ system\(\"./bin/notify_osx.sh RESTHeart restarted\"\) \}  /.*/\'
+echo \> tail -f restheart.log
+echo \> tail -f restheart.log \| awk \'/RESTHeart stopped/ \{ system\(\"./bin/notify_osx.sh RESTHeart stopped\"\) \} /RESTHeart started/ \{ system\(\"./bin/notify_osx.sh RESTHeart restarted\"\) \}  /.*/\'
 
-$JAVA_BIN/java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:4000 -jar $RH/restheart.jar $RH/$CONFIG_FILE -e $RH/etc/dev.properties > /dev/null &
+RH_LOG_FILE_PATH=$LOG_FILE $JAVA_BIN/java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:4000 -jar $RH/restheart.jar $RH/$CONFIG_FILE -e $RH/etc/dev.properties > /dev/null &
