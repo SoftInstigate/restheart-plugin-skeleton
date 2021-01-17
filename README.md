@@ -45,7 +45,7 @@ You can check the log file with `tail -f restheart.log`
 The following command can be used to get notified on OSX when RESTHeart is restarted by the script `bin/watch.sh`.
 
 ```bash
-& tail -f /usr/local/var/log/restheart.log | awk '/RESTHeart stopped/ { system("./bin/notify_osx.sh RESTHeart stopped") } /RESTHeart started/ { system("./bin/notify_osx.sh RESTHeart started") } /.*/'
+& tail -f restheart.log | awk '/RESTHeart stopped/ { system("./bin/notify_osx.sh RESTHeart stopped") } /RESTHeart started/ { system("./bin/notify_osx.sh RESTHeart started") } /.*/'
 ```
 
 If you are on Linux, you can tweak the command (`notify_osx.sh` is specific for OSX). Have a look at [this article](https://superuser.com/questions/31917/is-there-a-way-to-show-notification-from-bash-script-in-ubuntu) for some ideas.
