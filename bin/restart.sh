@@ -61,33 +61,20 @@ done
 
 if [ ! -d ".cache" ]
 then
-    if [ "$(uname)" == "Darwin" ]; then
-        DCEVM_URL=https://github.com/TravaOpenJDK/trava-jdk-11-dcevm/releases/download/dcevm-11.0.9%2B2/java11-openjdk-dcevm-osx.tar.gz
-    else
-        DCEVM_URL=https://github.com/TravaOpenJDK/trava-jdk-11-dcevm/releases/download/dcevm-11.0.9%2B2/java11-openjdk-dcevm-linux.tar.gz
-    fi
-
     echo **** Downloading RESTHeart..
     mkdir .cache && cd .cache
     curl -L https://gitreleases.dev/gh/softInstigate/restheart/latest/restheart.tar.gz --output restheart.tar.gz
     tar -xzf restheart.tar.gz
-    echo **** Downloading DCEVM..
-    curl -L $DCEVM_URL > dcevm.tar.gz
-    tar -xzf dcevm.tar.gz
     cd ..
 fi
 
 cp $CD/etc/*.properties .cache/restheart/etc
 cp $CD/etc/*.yml .cache/restheart/etc
 
-if [ "$(uname)" == "Darwin" ]; then
-    JAVA_BIN=$CD/.cache/dcevm-11.0.9+2/Contents/Home/bin
-else
-    JAVA_BIN=$CD/.cache/dcevm-11.0.9+2/bin
-fi
-
 echo Killing restheart
 kill `lsof -t -i:8080` 2> /dev/null || echo .. > /dev/null
+
+sleep 2
 
 echo Deploying plugin
 cp target/*.jar $RH/plugins
@@ -99,4 +86,4 @@ echo Starting restheart, check log with:
 echo \> tail -f restheart.log
 echo \> tail -f restheart.log \| awk \'/RESTHeart stopped/ \{ system\(\"./bin/notify_osx.sh RESTHeart stopped\"\) \} /RESTHeart started/ \{ system\(\"./bin/notify_osx.sh RESTHeart restarted\"\) \}  /.*/\'
 
-RH_LOG_FILE_PATH=$LOG_FILE $JAVA_BIN/java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:4000 -jar $RH/restheart.jar $RH/$CONFIG_FILE -e $RH/etc/dev.properties > /dev/null &
+RH_LOG_FILE_PATH=$LOG_FILE java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:4000 -jar $RH/restheart.jar $RH/$CONFIG_FILE -e $RH/etc/dev.properties > /dev/null &

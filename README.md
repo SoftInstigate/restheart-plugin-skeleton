@@ -6,7 +6,7 @@ Documentation for plugins development is available at [https://restheart.org/doc
 
 ### Requirements
 
-- Java 11+
+- Java 16+
 - Maven
 - entr (for watch script)
 - Docker (to start MongoDB with docker-compose)
@@ -25,7 +25,7 @@ entr is not available for Windows. You need to use the [Linux Subsystem](https:/
 
 ## Start RESTHeart in development mode
 
-Use the script `./bin/restart.sh` to start the latest release of RESTHeart in development mode, i.e. run with the DCEVM JVM and enabled for debugging on port 4000
+Use the script `./bin/restart.sh` to start the latest release of RESTHeart in development mode, i.e. enabled for debugging on port 4000
 
 ```bash
 $ mvn clean package
@@ -34,7 +34,7 @@ $ ./bin/restart.sh -p restheart
 
 > the script automatically deploys the plugin to RESTHeart
 
-> the script automatically downloads RESTHeart and the DCEVM JVM in the `.cache` directory. Delete `.cache` and rerun the script to update RESTHeart to latest release.
+> the script automatically downloads RESTHeart in the `.cache` directory. Delete `.cache` and rerun the script to update RESTHeart to latest release.
 
 You can check the log file with `tail -f restheart.log`
 
@@ -75,7 +75,7 @@ The script `docker/docker-entrypoint-initdb.d/initdb.js` is executed by the mong
 
 ## Stop RESTHeart
 
-Use the script `./bin/stop.sh` to stop the instance of RESTHeart running in development mode with the DCEVM JVM.
+Use the script `./bin/stop.sh` to stop the instance of RESTHeart running in development mode.
 
 
 ## Watch: automatic rebuilding and restarting
@@ -102,7 +102,7 @@ $ ./bin/watch.sh -p restheart | awk '/BUILD SUCCESS/ { system("./bin/notify_osx.
 
 ## Hot Code Replace
 
-The script `bin/restart.sh` runs RESTHeart with the Java Virtual Machine [DCEVM](http://dcevm.github.io), that features *extended Hot Code Replace*.
+The script `bin/restart.sh` runs RESTHeart with the debugger enabled, that allows some *Hot Code Replace*.
 
 For even quicker code modifications, you can stop the script `bin/watch.sh`, attach the debugger (on port 4000) to use the Hot Code Replace feature of your IDE.
 

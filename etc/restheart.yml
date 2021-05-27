@@ -1,4 +1,6 @@
 ## RESTHeart Configuration File.
+## See https://restheart.org/docs/setup/#configuration-files
+
 ---
 #### Listeners
 
@@ -6,13 +8,13 @@
  # The supported protocols are: http and https.
  # You can setup a listener per protocol (up to 2).
 
- # WARNING: Using the http listener is not secure with basic authentication:
- # credentials can be sniffed by a man-in-the-middle attack.
-
+ # To enable HTTPS, configure a certificate. See https://restheart.org/docs/security/tls/
 https-listener: {{{https-listener}}}
 https-host: {{{https-host}}}
 https-port: {{{https-port}}}
 
+ # WARNING: Using the http listener is not secure. E.g. with basic authentication
+ # credentials can be sniffed by a man-in-the-middle attack.
 http-listener: {{{http-listener}}}
 http-host: {{{http-host}}}
 http-port: {{{http-port}}}
@@ -28,7 +30,18 @@ ajp-port: {{{ajp-port}}}
 
 instance-name: {{{instance-name}}}
 
-### Proxied resources
+#### Instance base URL
+
+ # Optionally define the base url of this instance
+ # Useful when RESTHeart is mediated by a reverse proxy or an API gateway
+ # to determine the instance's correct URL
+ # It is used by the MongoService to build the Location response header
+ # when a document is created with a POST request that doesn't include the _id
+ # If not specified, the Location is generated from the request URL
+
+ # instance-base-url: https://api.example.io
+
+#### Proxied resources
 
  # location (required) The location URI to bound to the HTTP proxied server.
  # proxy-pass (required) The URL of the HTTP proxied server. It can be an array of URLs for load balancing.
@@ -60,7 +73,7 @@ instance-name: {{{instance-name}}}
 
 mongo-uri: {{{mongo-uri}}}
 
-## MongoDb resources
+#### MongoDb resources
 
 # Use mongo-mounts to expose MongoDb resources binding them to API URIs.
 #
@@ -72,7 +85,7 @@ mongo-uri: {{{mongo-uri}}}
 # It can be an absolute path (eg. /api) or path template (eg. /{foo}/bar/*).
 # The values of the path templates properties are available:
 # - in the 'what' property (e.g. what: /{foo}_db/coll)
-# - programmatically from RequestContext.getPathTemplateParamenters() method.
+# - programmatically from MongoRequest.getPathTemplateParamenters() method.
 #
 # It is not possible to mix absolute paths and path templates: 'where' URIs
 # need to be either all absolute paths or all path templates.
@@ -110,7 +123,7 @@ mongo-mounts:
 ## PLAIN_JSON or HAL are aliases for SHAL
 ## S is an alias for STANDARD
 
-default-representation-format: {{{default-representation-format}}}
+#default-representation-format: STANDARD
 
 #### Static Web Resources
 
@@ -125,23 +138,21 @@ static-resources-mounts:
 #    welcome-file: index.html
 #    embedded: false
 
-### Security
+#### Security
 
 ## SSL Configuration
 
- # Configure the keystore to enable the https listener.
-
- # RESTHeart Security comes with a self-signed certificate that makes
- # straightforward enabling https.
- # Specify use-embedded-keystore: true to use it (this is the default setting).
- # Using the self-signed certificate leads to issues with some clients;
- # for instance, with curl you need to specify the "--insecure" option or you'll get an error message.
-
-use-embedded-keystore: true
+# Configure the keystore to enable the https listener.
 
  # To use your own certificate you need to import it (and eventually the CA certificates chain) into a java keystore
- # and specify use-embedded-keystore: false and the keystore-file,keystore-password and certpassword configuration properties.
- # Refer to the java keystore documentation for that.
+ # and specify the keystore-file,keystore-password and certpassword configuration properties.
+ # Two scripts are available to generate the keystore:
+ ## 1) generate-self-signed-keystore.sh
+ ##    Generate a self signed certificate and import it in the java keystore
+ ##    https://github.com/SoftInstigate/restheart/blob/master/core/bin/generate-self-signed-keystore.sh
+ ## 2) convert-letsencrypt-java-keystore.sh
+ ##    Generate the keystore from a https://letsencrypt.org free certificate
+ ##    https://github.com/SoftInstigate/restheart/blob/master/core/bin/convert-letsencrypt-java-keystore.sh
 
 #keystore-file: /path/to/keystore/file
 #keystore-password: password
@@ -220,9 +231,8 @@ authenticators:
  # Authorizers verify if a request is allowed.
 
  # As an in-bound request is received and authenticated the isAllowed() method is
- # called on each authenticator in turn until one of the following occurs:
- # an authenticator allows the incoming request or the list of authenticators is
- # exhausted. In the latter case, the request ends and 403 Forbidden is returned.
+ # called on each authorizers. A secured request is allowed when no `VETOER` denies
+ # it and at least one `ALLOWER` allows it.
 
 authorizers:
   fileAclAuthorizer:
@@ -238,6 +248,12 @@ authorizers:
     cache-size: 1000
     cache-ttl: 5000
     cache-expire-policy: AFTER_WRITE
+  # originVetoer protects from CSRF attacks by forbidding requests whose Origin header is not whitelisted
+  originVetoer:
+      enabled: false
+      whitelist:
+        - https://restheart.org
+        - http://localhost
   fullAuthorizer:
     enabled: false
     authentication-required: true
@@ -294,30 +310,28 @@ plugins-directory: {{{plugins-directory}}}
 # with the same name of the plugin (as defined in its @RegisterPlugin annotation).
 # The property 'enabled' allows enabling plugins that are not enabled by default,
 # i.e. that are registered with @RegisterPlugin( .., enabledByDefault=false)
+# The property 'secured' allows overriding the secure attribute of the service defined
+# by @RegisterPlugin( .., secure=false)
 
 plugins-args:
   mongo:
-    enabled: true
     uri: /
-    secured: true
-  csvLoader:
-    secured: true
   rndTokenService:
-    enabled: true
     uri: /tokens
-    secured: false
   ping:
     enabled: true
-    secured: false
     msg: Greetings from RESTHeart!
   roles:
-    enabled: true
     uri: /roles
-    secured: false
-  echo:
+  graphql:
+    uri: /graphql
+    db: restheart
+    collection: gql-apps
+    verbose: true
+  # a global blacklist for mongodb operators in filter query parameter
+  filterOperatorsBlacklist:
+    blacklist: [ "$where" ]
     enabled: false
-    uri: /echo
-    secured: false
 
 #### Logging
 
