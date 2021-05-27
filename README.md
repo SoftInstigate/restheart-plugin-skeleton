@@ -128,7 +128,7 @@ You can avoid a dependency to be added to the classpath by specifying the scope 
 <dependency>
     <groupId>org.restheart</groupId>
     <artifactId>restheart-commons</artifactId>
-    <version>5.1.5</version>
+    <version>6.0.0</version>
     <scope>provided</scope>
 </dependency>
 ```
