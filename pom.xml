@@ -8,15 +8,15 @@
 
   <properties>
     <mongodb.version>5.0</mongodb.version>
-    <maven.compiler.source>16</maven.compiler.source>
-    <maven.compiler.target>16</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.restheart</groupId>
       <artifactId>restheart-commons</artifactId>
-      <version>6.1.4</version>
+      <version>6.2.0</version>
       <scope>provided</scope>
     </dependency>
 

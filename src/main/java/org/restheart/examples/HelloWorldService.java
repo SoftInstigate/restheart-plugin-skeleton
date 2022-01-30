@@ -19,7 +19,6 @@ package org.restheart.examples;
  *
  * @author Andrea Di Cesare <andrea@softinstigate.com>
  */
-import com.google.gson.JsonObject;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.restheart.exchange.JsonRequest;
@@ -27,6 +26,8 @@ import org.restheart.exchange.JsonResponse;
 import org.restheart.plugins.JsonService;
 import org.restheart.plugins.RegisterPlugin;
 import org.restheart.utils.HttpStatus;
+
+import static org.restheart.utils.GsonUtils.object;
 
 /**
  * Just another Hello World program.
@@ -40,13 +41,14 @@ public class HelloWorldService implements JsonService {
         if (request.isOptions()) {
             handleOptions(request);
         } else if (request.isGet()) {
-            var resp = new JsonObject();
             var name = request.getQueryParameters().get("name");
 
+            var body = object();
+
             if (name == null) {
-                resp.addProperty("msg", "Hello World!");
+                body.put("msg", "Hello World!");
             } else {
-                resp.addProperty("msg", "Hello ".concat(name.getFirst()));
+                body.put("msg", "Hello ".concat(name.getFirst()));
             }
 
             // RandomStringUtils is from Apache commons-lang3 library
@@ -58,8 +60,8 @@ public class HelloWorldService implements JsonService {
             // by the script restart.sh
             // See
             // https://github.com/SoftInstigate/restheart-plugin-skeleton/blob/master/README.md#dependencies
-            resp.addProperty("rnd", RandomStringUtils.randomAlphabetic(10));
-            response.setContent(resp);
+            body.put("rnd", RandomStringUtils.randomAlphabetic(10));
+            response.setContent(body);
         } else {
             response.setStatusCode(HttpStatus.SC_NOT_IMPLEMENTED);
         }

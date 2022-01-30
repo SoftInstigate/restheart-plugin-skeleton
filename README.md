@@ -6,8 +6,7 @@ Documentation for plugins development is available at [https://restheart.org/doc
 
 ### Requirements
 
-- Java 16+
-- Maven
+- Java 17+
 - entr (for watch script)
 - Docker (to start MongoDB with docker-compose)
 
