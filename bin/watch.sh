@@ -43,4 +43,4 @@ done
 
 [ $opts_flag -eq 0 ] && help_message && exit 2
 
-find .  \( -path './src/*' -and -name "*.java" \)  -or -path './etc/*.yml'  -or -path './etc/*.properties' | entr sh -c "mvn clean package &&  ./bin/restart.sh $*"
+find .  \( -path './src/*' -and -name "*.java" \)  -or -path './etc/*.yml'  -or -path './etc/*.properties' | entr sh -c "./mvnw clean package &&  ./bin/restart.sh $*"
