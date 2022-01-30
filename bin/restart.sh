@@ -63,7 +63,7 @@ if [ ! -d ".cache" ]
 then
     echo **** Downloading RESTHeart..
     mkdir .cache && cd .cache
-    curl -L https://gitreleases.dev/gh/softInstigate/restheart/latest/restheart.tar.gz --output restheart.tar.gz
+    curl -L https://github.com/SoftInstigate/restheart/releases/latest/download/restheart.tar.gz --output restheart.tar.gz
     tar -xzf restheart.tar.gz
     cd ..
 fi
