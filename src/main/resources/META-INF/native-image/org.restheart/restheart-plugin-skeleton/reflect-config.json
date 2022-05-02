@@ -1,0 +1,6 @@
+[
+  {
+    "name": "org.restheart.examples.HelloWorldService",
+    "methods": [{ "name": "<init>", "parameterTypes": [] }]
+  }
+]
