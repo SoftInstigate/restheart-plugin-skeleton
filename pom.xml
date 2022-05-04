@@ -10,7 +10,7 @@
     <mongodb.version>5.0</mongodb.version>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <restheart.version>6.3.0</restheart.version>
+    <restheart.version>6.3.1-SNAPSHOT</restheart.version>
   </properties>
 
   <dependencies>

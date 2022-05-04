@@ -4,7 +4,7 @@ This repository provides a skeleton project to build RESTHeart Plugins.
 
 Documentation for plugins development is available at [https://restheart.org/docs/plugins/overview/](https://restheart.org/docs/plugins/overview/).
 
-### Requirements
+## Requirements
 
 - Java 17+
 - entr (for watch script)
@@ -39,7 +39,7 @@ You can check the log file with `tail -f restheart.log`
 
 > log file path is set in `etc/dev.properties`
 
-#### Get notified when RESTHeart restarts
+## Get notified when RESTHeart restarts
 
 The following command can be used to get notified on OSX when RESTHeart is restarted by the script `bin/watch.sh`.
 
@@ -49,7 +49,7 @@ The following command can be used to get notified on OSX when RESTHeart is resta
 
 If you are on Linux, you can tweak the command (`notify_osx.sh` is specific for OSX). Have a look at [this article](https://superuser.com/questions/31917/is-there-a-way-to-show-notification-from-bash-script-in-ubuntu) for some ideas.
 
-### microD profile
+## microD profile
 
 Use the profile `microd` to start RESTHeart without the MongoDB Service. We call this profile **microD**, because it is an effective runtime environment for micro-services.
 
@@ -58,7 +58,7 @@ $ mvn clean package
 $ ./bin/restart.sh -p microd
 ```
 
-### MongoDB
+## MongoDB
 
 You can use docker-compose to run MongoDB
 
@@ -68,14 +68,13 @@ $ docker-compose up -d
 
 > docker-compose runs MongoDB as a single instance replica set. This is required for transactions and change streams to work.
 
-#### Init MongoDB
+### Init MongoDB
 
 The script `docker/docker-entrypoint-initdb.d/initdb.js` is executed by the mongo shell in the MongoDB container and allows initializing MongoDB, for instance creating test data.
 
 ## Stop RESTHeart
 
 Use the script `./bin/stop.sh` to stop the instance of RESTHeart running in development mode.
-
 
 ## Watch: automatic rebuilding and restarting
 
@@ -91,7 +90,7 @@ Or
 $ ./bin/watch.sh -p microd
 ```
 
-#### Get building notifications on OSX
+## Get building notifications on OSX
 
 The following command can be used to get notified on OSX when about building events triggered by the script `bin/watch.sh`
 
@@ -127,7 +126,7 @@ You can avoid a dependency to be added to the classpath by specifying the scope 
 <dependency>
     <groupId>org.restheart</groupId>
     <artifactId>restheart-commons</artifactId>
-    <version>6.0.0</version>
+    <version>6.3.0</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -152,6 +151,50 @@ The jar filename, is defined in `pom.xml` as equal to the artifactId.
  <finalName>${project.artifactId}</finalName>
  ...
 </build>
+```
+
+## Build native image
+
+RESTHeart supports native images builds with GraalVM.
+
+See [Deploy Java Plugins on RESTHeart native](https://restheart.org/docs/plugins/deploy/#deploy-java-plugins-on-restheart-native) documentation page for more information.
+
+### Requirements
+
+Building RESTHeart with your plugin as a native image requires the GraalVM and its `native-image` tool.
+
+Check [Install the GraalVM](https://restheart.org/docs/graalvm/#install-the-graalvm) documentation page for more information on how to install them.
+
+### Define the reflect-config.json for your plugins
+
+Before building your plugin you need to define the native image reflection configuration.
+
+You need to create in your plugin source project the file `src/main/resources/META-INF/native-image/<group-id>/<artifact-id>/reflect-config.json` and add an entry per each plugin.
+
+The following entry is an example of [reflect-config.json](https://github.com/SoftInstigate/restheart-plugin-skeleton/blob/master/src/main/resources/META-INF/native-image/org.restheart/restheart-plugin-skeleton/reflect-config.json) required by the `HelloWorldService` included in the skeleton code:
+
+```json
+[
+  {
+    "name": "org.restheart.examples.HelloWorldService",
+    "methods": [{ "name": "<init>", "parameterTypes": [] }]
+  }
+]
+```
+
+You need to specify the methods for:
+
+1. the default Constructor (always)
+2. the method annotated with `@InjectConfiguration` (if any)
+3. the method annotated with `@InjectMongoClient` (if any)
+4. the method annotated with `@InjectPluginsRegistry` (if any)
+
+### Build the native image
+
+The `pom.xml` defines the `native` profile. To build your RESTHeart embedding your plugin run:
+
+```bash
+$ ./mvnw clean package -Pnative
 ```
 
 ## TestService
