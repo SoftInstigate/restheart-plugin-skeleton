@@ -27,7 +27,7 @@ entr is not available for Windows. You need to use the [Linux Subsystem](https:/
 Use the script `./bin/restart.sh` to start the latest release of RESTHeart in development mode, i.e. enabled for debugging on port 4000
 
 ```bash
-$ mvn clean package
+$ ./mvnw clean package
 $ ./bin/restart.sh -p restheart
 ```
 
