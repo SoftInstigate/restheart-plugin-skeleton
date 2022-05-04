@@ -10,7 +10,7 @@
     <mongodb.version>5.0</mongodb.version>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <restheart.version>6.3.1-SNAPSHOT</restheart.version>
+    <restheart.version>[6.3,)</restheart.version>
   </properties>
 
   <dependencies>
@@ -72,24 +72,24 @@
             <artifactId>restheart-security</artifactId>
             <version>${restheart.version}</version>
           </dependency>
-          <!-- optional -->
-          <!-- <dependency>
+          <!-- optional, comment out if you don't need the REST MongoDB API -->
+          <dependency>
             <groupId>org.restheart</groupId>
             <artifactId>restheart-mongodb</artifactId>
             <version>${restheart.version}</version>
-          </dependency> -->
-          <!-- optional -->
-          <!-- <dependency>
+          </dependency>
+          <!-- optional, comment out if you don't need to support JavaScript plugins -->
+          <dependency>
             <groupId>org.restheart</groupId>
             <artifactId>restheart-polyglot</artifactId>
             <version>${restheart.version}</version>
-          </dependency> -->
-          <!-- optional -->
-          <!-- <dependency>
+          </dependency>
+          <!-- optional, comment out if you don't need the GraphQL MongoDB API -->
+          <dependency>
             <groupId>org.restheart</groupId>
             <artifactId>restheart-graphql</artifactId>
             <version>${restheart.version}</version>
-          </dependency> -->
+          </dependency>
           <!-- the following dependencies are required for native image -->
           <dependency>
             <groupId>com.github.jnr</groupId>
