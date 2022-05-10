@@ -20,13 +20,20 @@ package org.restheart.examples;
  * @author Andrea Di Cesare <andrea@softinstigate.com>
  */
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.restheart.exchange.JsonRequest;
 import org.restheart.exchange.JsonResponse;
 import org.restheart.plugins.JsonService;
 import org.restheart.plugins.RegisterPlugin;
 import org.restheart.utils.HttpStatus;
-
+// RandomStringUtils is from Apache commons-lang3 library
+// This is an external dependency i.e. it is not provided by restheart.jar,
+// and thus it must be added to the classpath for the service to work.
+// All (not provided) dependenies are copied to target/lib by the
+// maven-dependency-plugin
+// and then copied to the plugins directory to add them to the classpath
+// by the script restart.sh
+// See https://github.com/SoftInstigate/restheart-plugin-skeleton/blob/master/README.md#dependencies
+import org.apache.commons.lang3.RandomStringUtils;
 import static org.restheart.utils.GsonUtils.object;
 
 /**
@@ -34,36 +41,18 @@ import static org.restheart.utils.GsonUtils.object;
  *
  * @author Andrea Di Cesare <andrea@softinstigate.com>
  */
-@RegisterPlugin(name = "helloWorldService", description = "just another Hello World program", defaultURI = "/srv")
+@RegisterPlugin(name = "helloWorldService",
+                description = "just another Hello World program",
+                defaultURI = "/srv")
 public class HelloWorldService implements JsonService {
     @Override
-    public void handle(JsonRequest request, JsonResponse response) throws Exception {
-        if (request.isOptions()) {
-            handleOptions(request);
-        } else if (request.isGet()) {
-            var name = request.getQueryParameters().get("name");
-
-            var body = object();
-
-            if (name == null) {
-                body.put("msg", "Hello World!");
-            } else {
-                body.put("msg", "Hello ".concat(name.getFirst()));
-            }
-
-            // RandomStringUtils is from Apache commons-lang3 library
-            // This is an external dependency i.e. it is not provided by restheart.jar,
-            // and thus it must be added to the classpath for the service to work.
-            // All (not provided) dependenies are copied to target/lib by the
-            // maven-dependency-plugin
-            // and then copied to the plugins directory to add them to the classpath
-            // by the script restart.sh
-            // See
-            // https://github.com/SoftInstigate/restheart-plugin-skeleton/blob/master/README.md#dependencies
-            body.put("rnd", RandomStringUtils.randomAlphabetic(10));
-            response.setContent(body);
-        } else {
-            response.setStatusCode(HttpStatus.SC_NOT_IMPLEMENTED);
+    public void handle(JsonRequest req, JsonResponse res) {
+        switch(req.getMethod()) {
+            case GET -> res.setContent(object()
+                .put("message", "Hello World!")
+                .put("rnd", RandomStringUtils.randomAlphabetic(10)));
+            case OPTIONS -> handleOptions(req);
+            default -> res.setStatusCode(HttpStatus.SC_METHOD_NOT_ALLOWED);
         }
     }
 }
