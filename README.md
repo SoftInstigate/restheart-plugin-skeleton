@@ -17,7 +17,7 @@ The project skeleton defines a dummy *Service* bound at `/srv`:
 
 ```bash
 $ curl localhost:8080/srv
-{"message":"Hello World!sss ss","rnd":"njXZksfKFW"}%
+{"message":"Hello World!","rnd":"njXZksfKFW"}%
 ```
 
 At first run, `rh.sh` also transparently downloads and installs RESTHeart in the `.cache` subdirectory.

@@ -49,7 +49,7 @@ public class HelloWorldService implements JsonService {
     public void handle(JsonRequest req, JsonResponse res) {
         switch(req.getMethod()) {
             case GET -> res.setContent(object()
-                .put("message", "Hello World!sss ss")
+                .put("message", "Hello World!")
                 .put("rnd", RandomStringUtils.randomAlphabetic(10)));
             case OPTIONS -> handleOptions(req);
             default -> res.setStatusCode(HttpStatus.SC_METHOD_NOT_ALLOWED);
