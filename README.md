@@ -21,7 +21,7 @@ For Linux, please refer to [entr GitHub repo](https://github.com/eradman/entr).
 
 entr is not available for Windows. Use the [Linux Subsystem](https://docs.microsoft.com/en-us/windows/wsl/install-win10) to run the `rh watch`.
 
-## Build and deploy the plugin, restarting RESTHeart
+## Build and deploy
 
 The helper script `./bin/rh.sh`, builds and deploys the plugin, automatically restarting RESTHeart. It also installs RESTHeart on first run.
 
@@ -65,11 +65,11 @@ Available options:
 
 Examples:
 
-> ./bin/rh.sh run                        build, deploy the plugin and run RESTHeart with it
-> ./bin/rh.sh                            like 'run'
-> ./bin/rh.sh watch                      automatically re-run on code changes
-> ./bin/rh.sh --port 9090 -p microd run  run on HTTP port 9090 with microd profile
-> ./bin/rh.sh -i -v 6.3.4 run            Force reinstalling RESHeart version 6.3.4, then run
+./bin/rh.sh run                        build, deploy the plugin and run RESTHeart with it
+./bin/rh.sh                            like 'run'
+./bin/rh.sh watch                      automatically re-run on code changes
+./bin/rh.sh --port 9090 -p microd run  run on HTTP port 9090 with microd profile
+./bin/rh.sh -i -v 6.3.4 run            Force reinstalling RESHeart version 6.3.4, then run
 
 All commands automatically download and install RESTHeart if needed.
 ```
