@@ -4,6 +4,24 @@ This repository provides a skeleton project for RESTHeart Plugins.
 
 Documentation for plugins development is available at [https://restheart.org/docs/plugins/overview/](https://restheart.org/docs/plugins/overview/).
 
+## Quick start
+
+```bash
+$ git clone --depth 1 git@github.com:SoftInstigate/restheart-plugin-skeleton.git && cd restheart-plugin-skeleton
+$ ./bin/rh.sh -p microd
+```
+
+The `rh.sh` helper script builds the plugin and runs RESTHeart with it. The `microd` profile disables the MongoDB API; this avoids to start MongoDB for running it.
+
+The project skeleton defines a dummy *Service* bound at `/srv`:
+
+```bash
+$ curl localhost:8080/srv
+{"message":"Hello World!sss ss","rnd":"njXZksfKFW"}%
+```
+
+At first run, `rh.sh` also transparently downloads and installs RESTHeart in the `.cache` subdirectory.
+
 ## Requirements
 
 - Java 17+
@@ -256,7 +274,6 @@ $ http :8080/srv
 **curl**
 
 ```bash
-$ curl :8080/srv
-
-{"msg":"Hello World!"}%
+$ curl localhost:8080/srv
+{"message":"Hello World!sss ss","rnd":"njXZksfKFW"}%%
 ```
