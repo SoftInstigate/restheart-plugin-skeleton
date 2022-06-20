@@ -1,16 +1,15 @@
-# RESTHeart Plugin Skeleton Project
+# RESTHeart Plugin Skeleton
 
-This repository provides a skeleton project to build RESTHeart Plugins.
+This repository provides a skeleton project for RESTHeart Plugins.
 
 Documentation for plugins development is available at [https://restheart.org/docs/plugins/overview/](https://restheart.org/docs/plugins/overview/).
 
 ## Requirements
 
 - Java 17+
-- entr (for watch script)
-- Docker (to start MongoDB with docker-compose)
+- Docker (optional, only needed to start MongoDB with docker-compose)
 
-The script `watch.sh` requires [entr](https://github.com/eradman/entr)
+The command `watch` requires [entr](https://github.com/eradman/entr)
 
 You can install it on Mac with:
 
@@ -20,28 +19,64 @@ $ brew install entr
 
 For Linux, please refer to [entr GitHub repo](https://github.com/eradman/entr).
 
-entr is not available for Windows. You need to use the [Linux Subsystem](https://docs.microsoft.com/en-us/windows/wsl/install-win10) to run the `watch.sh`.
+entr is not available for Windows. Use the [Linux Subsystem](https://docs.microsoft.com/en-us/windows/wsl/install-win10) to run the `rh watch`.
 
-## Start RESTHeart in development mode
+## Build and deploy the plugin, restarting RESTHeart
 
-Use the script `./bin/restart.sh` to start the latest release of RESTHeart in development mode, i.e. enabled for debugging on port 4000
+The helper script `./bin/rh.sh`, builds and deploys the plugin, automatically restarting RESTHeart. It also installs RESTHeart on first run.
+
 
 ```bash
-$ ./mvnw clean package
-$ ./bin/restart.sh -p restheart
+$ ./bin/rh.sh
 ```
 
-> the script automatically deploys the plugin to RESTHeart
-
-> the script automatically downloads RESTHeart in the `.cache` directory. Delete `.cache` and rerun the script to update RESTHeart to latest release.
+the script automatically:
+- downloads the latest version of RESTHeart into the `.cache` directory. Run with `-i -v [version_tag]` to (re)install a specific version.
+- builds the project with Maven (uses `mvnw`)
+- deploys the plugin (i.e. copies it into the directory `<RH_HOME>/plugins`)
+- restart RESTHeart
 
 You can check the log file with `tail -f restheart.log`
 
 > log file path is set in `etc/dev.properties`
 
+The full script options are:
+
+```terminal
+$ ./bin/rh.sh -h
+Usage: rh.sh [-h] [-b] [-w] [-p profile] [-i [-v version]] [--port http_port] [--no-color] [command]
+
+Helper script to Build, Watch and Deploy the plugin, automatically restarting RESTHeart. It also installs RESTHeart.
+
+Commands:
+
+r, run     Build and deploy the plugin, restarting RESTHeart (default)
+k, kill    Kill RESTHeart
+w, watch   Watch sources and build and deploy the plugin on changes, restarting RESTHeart
+
+Available options:
+
+-h, --help      Print this help and exit
+-i, --install   Force reinstalling RESTHeart
+-v, --version   RESTHeart version tag to install (default is latest)
+--port          HTTP port to use (default is 8080)
+-p, --profile   Profile to use: restheart (default), microd
+--no-color      Disable colored output
+
+Examples:
+
+> ./bin/rh.sh run                        build, deploy the plugin and run RESTHeart with it
+> ./bin/rh.sh                            like 'run'
+> ./bin/rh.sh watch                      automatically re-run on code changes
+> ./bin/rh.sh --port 9090 -p microd run  run on HTTP port 9090 with microd profile
+> ./bin/rh.sh -i -v 6.3.4 run            Force reinstalling RESHeart version 6.3.4, then run
+
+All commands automatically download and install RESTHeart if needed.
+```
+
 ## Get notified when RESTHeart restarts
 
-The following command can be used to get notified on OSX when RESTHeart is restarted by the script `bin/watch.sh`.
+The following command can be used to get notified on OSX when RESTHeart is restarted by `bin/rh.sh watch`.
 
 ```bash
 & tail -f restheart.log | awk '/RESTHeart stopped/ { system("./bin/notify_osx.sh RESTHeart stopped") } /RESTHeart started/ { system("./bin/notify_osx.sh RESTHeart started") } /.*/'
@@ -55,7 +90,7 @@ Use the profile `microd` to start RESTHeart without the MongoDB Service. We call
 
 ```bash
 $ mvn clean package
-$ ./bin/restart.sh -p microd
+$ ./bin/rh.sh -p microd
 ```
 
 ## MongoDB
@@ -72,22 +107,22 @@ $ docker-compose up -d
 
 The script `docker/docker-entrypoint-initdb.d/initdb.js` is executed by the mongo shell in the MongoDB container and allows initializing MongoDB, for instance creating test data.
 
-## Stop RESTHeart
+## Kill RESTHeart
 
-Use the script `./bin/stop.sh` to stop the instance of RESTHeart running in development mode.
+Use the command `./bin/rh.sh kill` to kill the instance of RESTHeart.
 
 ## Watch: automatic rebuilding and restarting
 
-You can use the script `bin/watch.sh`, to have the project automatically rebuilt, and RESTHeart automatically restarted whenever a source or configuration file changes.
+You can use the command `bin/rh watch`, to have the project automatically rebuilt, and RESTHeart automatically restarted whenever a source or configuration file changes.
 
 ```bash
-$ ./bin/watch.sh -p restheart
+$ ./bin/rh watch
 ```
 
 Or
 
 ```bash
-$ ./bin/watch.sh -p microd
+$ ./bin/rh watch -p microd
 ```
 
 ## Get building notifications on OSX
@@ -100,15 +135,13 @@ $ ./bin/watch.sh -p restheart | awk '/BUILD SUCCESS/ { system("./bin/notify_osx.
 
 ## Hot Code Replace
 
-The script `bin/restart.sh` runs RESTHeart with the debugger enabled, that allows some *Hot Code Replace*.
-
-For even quicker code modifications, you can stop the script `bin/watch.sh`, attach the debugger (on port 4000) to use the Hot Code Replace feature of your IDE.
+The script `bin/rh.sh` runs RESTHeart with the debugger enabled, that allows some *Hot Code Replace*.
 
 ## RESTHeart Configuration
 
-The directory `etc` contains the configuration files that are used by the script `bin/restart.sh`.
+The directory `etc` contains the configuration files that are used by the script `bin/rh.sh`.
 
-When a configuration file is modified, the container RESTHeart is automatically restarted by the script `bin/watch.sh`.
+When a configuration file is modified, the container RESTHeart is automatically restarted by the command `bin/rh.sh watch`.
 
 ## Dependencies
 
@@ -126,7 +159,7 @@ You can avoid a dependency to be added to the classpath by specifying the scope 
 <dependency>
     <groupId>org.restheart</groupId>
     <artifactId>restheart-commons</artifactId>
-    <version>6.3.0</version>
+    <version>6.3.4</version>
     <scope>provided</scope>
 </dependency>
 ```
