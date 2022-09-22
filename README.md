@@ -216,36 +216,23 @@ Building RESTHeart with your plugin as a native image requires the GraalVM and i
 
 Check [Install the GraalVM](https://restheart.org/docs/graalvm/#install-the-graalvm) documentation page for more information on how to install them.
 
-### Define the reflect-config.json for your plugins
-
-Before building your plugin you need to define the native image reflection configuration.
-
-You need to create in your plugin source project the file `src/main/resources/META-INF/native-image/<group-id>/<artifact-id>/reflect-config.json` and add an entry per each plugin.
-
-The following entry is an example of [reflect-config.json](https://github.com/SoftInstigate/restheart-plugin-skeleton/blob/master/src/main/resources/META-INF/native-image/org.restheart/restheart-plugin-skeleton/reflect-config.json) required by the `HelloWorldService` included in the skeleton code:
-
-```json
-[
-  {
-    "name": "org.restheart.examples.HelloWorldService",
-    "methods": [{ "name": "<init>", "parameterTypes": [] }]
-  }
-]
-```
-
-You need to specify the methods for:
-
-1. the default Constructor (always)
-2. the method annotated with `@InjectConfiguration` (if any)
-3. the method annotated with `@InjectMongoClient` (if any)
-4. the method annotated with `@InjectPluginsRegistry` (if any)
-
 ### Build the native image
 
 The `pom.xml` defines the `native` profile. To build your RESTHeart embedding your plugin run:
 
 ```bash
 $ ./mvnw clean package -Pnative
+```
+
+> note: native image build takes about 10 minutes!
+
+The binary executable is `./target/restheart-plugin-skeleton`
+
+Run it with:
+
+```bash
+$ mkdir target/plugins # the polyglot deployer needs the plugins directory
+$ ./target/restheart-plugin-skeleton etc/restheart.yml -e etc/dev.properties
 ```
 
 ## TestService
