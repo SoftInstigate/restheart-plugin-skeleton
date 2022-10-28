@@ -216,6 +216,13 @@ Building RESTHeart with your plugin as a native image requires the GraalVM and i
 
 Check [Install the GraalVM](https://restheart.org/docs/graalvm/#install-the-graalvm) documentation page for more information on how to install them.
 
+Also install `native-image` and `GraalVM.js` (the latter required from GraalVM v22.2.r17)
+
+```
+$ gu install native-image
+$ gu install js
+```
+
 ### Build the native image
 
 The `pom.xml` defines the `native` profile. To build your RESTHeart embedding your plugin run:
