@@ -236,7 +236,7 @@ _deploy() {
 
 _kill() {
     msg "${CYAN}RESTHeart at localhost:${http_port} killed${NOFORMAT}"
-    kill `lsof -t -i:${http_port}` 2> /dev/null || echo .. > /dev/null
+    kill `comm -12 <(lsof -t -i:8080) <(pgrep java)` 2> /dev/null || echo .. > /dev/null
 
     while _restheart_running; do sleep 1; done
 
