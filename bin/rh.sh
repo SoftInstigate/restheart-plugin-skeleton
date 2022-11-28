@@ -169,14 +169,10 @@ _download() {
 _apply_profile() {
     case "${profile}" in
         restheart)
-            CONFIG_FILE=etc/restheart.yml
-            [ -f ${rh_dir}/plugins/restheart-mongodb.disabled ] &&  mv ${rh_dir}/plugins/restheart-mongodb.disabled ${rh_dir}/plugins/restheart-mongodb.jar
-            [ -f ${rh_dir}/plugins/restheart-graphql.disabled ] &&  mv ${rh_dir}/plugins/restheart-graphql.disabled ${rh_dir}/plugins/restheart-graphql.jar
+            RHO_PROFILE=""
             ;;
         microd)
-            CONFIG_FILE=etc/microd.yml
-            [ -f ${rh_dir}/plugins/restheart-mongodb.jar ] && mv ${rh_dir}/plugins/restheart-mongodb.jar ${rh_dir}/plugins/restheart-mongodb.disabled
-            [ -f ${rh_dir}/plugins/restheart-graphql.jar ] && mv ${rh_dir}/plugins/restheart-graphql.jar ${rh_dir}/plugins/restheart-graphql.disabled
+            RHO_PROFILE="/mclient/enabled->false;/basicAuthMechanism/authenticator->\"fileRealmAuthenticator\";/digestAuthMechanism/authenticator->\"fileRealmAuthenticator\";/fileRealmAuthenticator/enabled->true;/fileRealmAuthenticator/conf-file->\"../etc/users.yml\";/fileAclAuthorizer/enabled->true;/fileAclAuthorizer/conf-file->\"../etc/acl.yml\";"
             ;;
         *)
             msg "${RED}Unknown profile: ${profile}${NOFORMAT}"
@@ -229,9 +225,7 @@ __build() {
 }
 
 _deploy() {
-    cp "${repo_dir}"/etc/*.properties "${rh_dir}"/etc
     cp "${repo_dir}"/etc/*.yml "${rh_dir}"/etc
-
     cp "${repo_dir}"/target/*.jar "${rh_dir}"/plugins
     cp "${repo_dir}"/target/lib/*.jar "${rh_dir}"/plugins
 
@@ -250,7 +244,7 @@ _kill() {
 }
 
 _run() {
-    HTTP_PORT=${http_port} RH_LOG_FILE_PATH="${repo_dir}/restheart.log" java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:$((http_port+1000)) -jar "${rh_dir}"/restheart.jar "${rh_dir}"/"${CONFIG_FILE}" -e "${rh_dir}/etc/dev.properties" > /dev/null &
+    RHO=$RHO_PROFILE"/http-listner/port->${http_port};/logging/log-to-file->true;/logging/log-file-path->\"${repo_dir}/restheart.log\"" java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:$((http_port+1000)) -jar "${rh_dir}"/restheart.jar > /dev/null &
     msg "${GREEN}RESTHeart started at localhost:${http_port}${NOFORMAT}"
     msg "${CYAN}JDWP available for debuggers at localhost:$((http_port+1000))${NOFORMAT}"
 
@@ -267,7 +261,7 @@ _watch() {
         exit 1
     fi
 
-    find "${repo_dir}" \( -path "${repo_dir}/src/*" -and -name "*.java" \) -or -path "${repo_dir}/etc/*.yml" -or -path "${repo_dir}/etc/*.properties" | entr sh -c "${repo_dir}/bin/$(basename "${BASH_SOURCE[0]}") run ${params} --no-watch"
+    find "${repo_dir}" \( -path "${repo_dir}/src/*" -and -name "*.java" \) | entr sh -c "${repo_dir}/bin/$(basename "${BASH_SOURCE[0]}") run ${params} --no-watch"
 
     msg "${GREEN}RESTHeart started at localhost:${http_port}${NOFORMAT}"
     msg "${CYAN}JDWP available for debuggers at localhost:$((http_port+1000))${NOFORMAT}"
@@ -297,7 +291,6 @@ case "${command}" in
             _apply_profile
             if [ ${profile} == "restheart" ]; then _mongodb_running; fi
             _run
-            #HTTP_PORT=${http_port} RH_LOG_FILE_PATH="${repo_dir}/restheart.log" java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:$((http_port+1000)) -jar "${rh_dir}"/restheart.jar "${rh_dir}"/"${CONFIG_FILE}" -e "${rh_dir}/etc/dev.properties" > /dev/null &
         else
             _watch
         fi

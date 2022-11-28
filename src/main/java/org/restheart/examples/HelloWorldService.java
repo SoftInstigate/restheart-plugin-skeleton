@@ -43,7 +43,8 @@ import static org.restheart.utils.GsonUtils.object;
  */
 @RegisterPlugin(name = "helloWorldService",
                 description = "just another Hello World program",
-                defaultURI = "/srv")
+                defaultURI = "/srv",
+                blocking = false)
 public class HelloWorldService implements JsonService {
     @Override
     public void handle(JsonRequest req, JsonResponse res) {
