@@ -26,6 +26,13 @@ At first run, `rh.sh` also transparently downloads and installs RESTHeart in the
 
 - Java 17+
 - Docker (optional, only needed to start MongoDB with docker-compose)
+- RESTHeart v7+
+
+NOTE: the current `rh.sh` script won't work for RESTHeart 6.x due to different configuration options. You can use the script at tag 6.x as follows:
+
+```bash
+$ git clone --branch 6.x --depth 1 git@github.com:SoftInstigate/restheart-plugin-skeleton.git && cd restheart-plugin-skeleton
+```
 
 The command `watch` requires [entr](https://github.com/eradman/entr)
 
@@ -157,9 +164,7 @@ The script `bin/rh.sh` runs RESTHeart with the debugger enabled, that allows som
 
 ## RESTHeart Configuration
 
-The directory `etc` contains the configuration files that are used by the script `bin/rh.sh`.
-
-When a configuration file is modified, the container RESTHeart is automatically restarted by the command `bin/rh.sh watch`.
+The default configuration is used. The script `bin/rh.sh` define the variable `RHO_PROFILE` that can be modified to apply configuration overrides, see [Modify the configuration with the RHO env var](https://restheart.org/docs/configuration#modify-the-configuration-with-the-rho-env-var)
 
 ## Dependencies
 
@@ -177,7 +182,7 @@ You can avoid a dependency to be added to the classpath by specifying the scope 
 <dependency>
     <groupId>org.restheart</groupId>
     <artifactId>restheart-commons</artifactId>
-    <version>6.3.4</version>
+    <version>7.0</version>
     <scope>provided</scope>
 </dependency>
 ```
