@@ -11,32 +11,37 @@ http_port=8080
 
 usage() {
   cat << EOF # remove the space between << and EOF, this is due to web plugin issue
-Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-b] [-w] [-p profile] [-i [-v version]] [--port http_port] [--no-color] [command]
+Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-b] [-w] [-i [-v version]] [-p http_port] [-o restheart options] [--no-color] [command]
 
 Helper script to Build, Watch and Deploy the plugin, automatically restarting RESTHeart. It also installs RESTHeart.
 
 Commands:
 
-r, run     Build and deploy the plugin, restarting RESTHeart (default)
+b, build   Build and deploy the plugin, restarting RESTHeart (default)
+r, run     start (or restarts) RESTHeart
 k, kill    Kill RESTHeart
 w, watch   Watch sources and build and deploy the plugin on changes, restarting RESTHeart
 
 Available options:
 
--h, --help      Print this help and exit
--i, --install   Force reinstalling RESTHeart
--v, --version   RESTHeart version tag to install (default is latest)
---port          HTTP port to use (default is 8080)
--p, --profile   Profile to use: restheart (default), microd
---no-color      Disable colored output
+-h, --help          Print this help and exit
+-i, --install       Force reinstalling RESTHeart
+-v, --version       RESTHeart version tag to install (default is latest)
+-p, --port          HTTP port to use (default is 8080)
+-o, --options       pass options to RESTHeart
+--no-color          Disable colored output
 
 Examples:
 
-${BASH_SOURCE[0]} run                        build, deploy the plugin and run RESTHeart with it
-${BASH_SOURCE[0]}                            like 'run'
-${BASH_SOURCE[0]} watch                      automatically re-run on code changes
-${BASH_SOURCE[0]} --port 9090 -p microd run  run on HTTP port 9090 with microd profile
-${BASH_SOURCE[0]} -i -v 6.3.4 run            Force reinstalling RESHeart version 6.3.4, then run
+${BASH_SOURCE[0]} build                                 build the plugin, deploy it and run RESTHeart with it
+${BASH_SOURCE[0]}                                       like 'build'
+${BASH_SOURCE[0]} start                                 start or restart RESTHeart
+${BASH_SOURCE[0]} watch                                 automatically re-run on code changes
+${BASH_SOURCE[0]} --port 9090 -o "-s"                   run on HTTP port 9090 with standalone configuration (-s)
+${BASH_SOURCE[0]} -o "-c"                               print RESTHeart effective configuration
+${BASH_SOURCE[0]} -i -v 7.1.0 run                       Force reinstalling RESHeart version 7.1.0, then run
+RHO='/logging/log-level->"debug"' ${BASH_SOURCE[0]}     run passing the RHO env var to override configuration
+
 
 All commands automatically download and install RESTHeart if needed.
 
@@ -75,11 +80,11 @@ die() {
 parse_params() {
   # default values of variables set from params
   force_install_flag=0
-  command='run'
+  command='build'
   run_flag=0
   no_watch_flag=0
-  profile='restheart'
   version='latest'
+  options=""
   params=$*
 
   while :; do
@@ -89,6 +94,9 @@ parse_params() {
       ;;
     r | run)
       command='run'
+      ;;
+    b | build)
+      command='build'
       ;;
     w | watch)
       command='watch'
@@ -103,8 +111,12 @@ parse_params() {
       no_watch_flag=1
       ;;
     -i | --install) force_install_flag=1 ;;
-    -p | --profile)
-      profile="${2-}"
+    -o | --options)
+      options="${2-}"
+      if [[ -z ${options}  ]] ; then
+        msg "${RED}Error: missing value of --options"
+        exit 1
+      fi
       shift
       ;;
     --port)
@@ -166,24 +178,6 @@ _download() {
     return ${curl_res}
 }
 
-_apply_profile() {
-    case "${profile}" in
-        restheart)
-            RHO_PROFILE=""
-            ;;
-        microd)
-            RHO_PROFILE="/mclient/enabled->false;/basicAuthMechanism/authenticator->\"fileRealmAuthenticator\";/digestAuthMechanism/authenticator->\"fileRealmAuthenticator\";/fileRealmAuthenticator/enabled->true;/fileRealmAuthenticator/conf-file->\"../etc/users.yml\";/fileAclAuthorizer/enabled->true;/fileAclAuthorizer/conf-file->\"../etc/acl.yml\";"
-            ;;
-        *)
-            msg "${RED}Unknown profile: ${profile}${NOFORMAT}"
-            usage
-            exit 4
-            ;;
-    esac
-
-    return 0
-}
-
 _mongodb_running() {
     if ! curl -s -o /dev/null localhost:27017; then
         msg "${RED}It looks like mongodb is not running on port 27017.${NOFORMAT}"
@@ -196,7 +190,25 @@ _mongodb_running() {
 }
 
 _restheart_running() {
-    if curl -s -o /dev/null localhost:${http_port}; then
+    if curl -s -o /dev/null localhost:${http_port}/ping; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# check if RESTHeart options specify the standalone option -s
+_requires_mongondb() {
+    if [[ ${options} =~ .*-s.* ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# check if RESTHeart only prints the configuration
+_only_print_conf() {
+    if [[ ${options} =~ .*-t.*|.*-c.*|.*-v.* ]]; then
         return 0
     else
         return 1
@@ -225,7 +237,6 @@ __build() {
 }
 
 _deploy() {
-    cp "${repo_dir}"/etc/*.yml "${rh_dir}"/etc
     cp "${repo_dir}"/target/*.jar "${rh_dir}"/plugins
     cp "${repo_dir}"/target/lib/*.jar "${rh_dir}"/plugins
 
@@ -236,7 +247,11 @@ _deploy() {
 
 _kill() {
     msg "${CYAN}RESTHeart at localhost:${http_port} killed${NOFORMAT}"
-    kill `comm -12 <(lsof -t -i:8080) <(pgrep java)` 2> /dev/null || echo .. > /dev/null
+    kill `comm -12 <(lsof -t -i:${http_port}) <(pgrep java)` 2> /dev/null || echo .. > /dev/null
+    kill `comm -12 <(lsof -t -i:$((http_port+1000))) <(pgrep java)` 2> /dev/null || echo .. > /dev/null
+
+    # give some time JDWP process to exit
+    sleep 2
 
     while _restheart_running; do sleep 1; done
 
@@ -244,9 +259,51 @@ _kill() {
 }
 
 _run() {
-    RHO=$RHO_PROFILE"/http-listner/port->${http_port};/logging/log-to-file->true;/logging/log-file-path->\"${repo_dir}/restheart.log\"" java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:$((http_port+1000)) -jar "${rh_dir}"/restheart.jar > /dev/null &
-    msg "${GREEN}RESTHeart started at localhost:${http_port}${NOFORMAT}"
-    msg "${CYAN}JDWP available for debuggers at localhost:$((http_port+1000))${NOFORMAT}"
+    if [ -z ${RHO:-""} ]; then
+        if _only_print_conf; then
+            RHO="/http-listner/port->${http_port};" java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:$((http_port+1000)) -jar "${rh_dir}"/restheart.jar ${options}
+        else
+            RHO="/http-listner/port->${http_port};" nohup java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:$((http_port+1000)) -jar "${rh_dir}"/restheart.jar ${options} > ${repo_dir}/restheart.log &
+            msg "${YELLOW}RESTHeart starting${NOFORMAT}"
+            started=0
+            for i in {1..5}; do
+                if _restheart_running; then
+                    started=1
+                    break
+                else
+                    sleep 1
+                fi
+            done
+            if (( ${started}  == 1 )); then
+                msg "${GREEN}RESTHeart started at localhost:${http_port}${NOFORMAT}"
+                msg "${CYAN}JDWP available for debuggers at localhost:$((http_port+1000))${NOFORMAT}"
+            else
+                msg "${RED}Error starting RESTHeart, check restheart.log${NOFORMAT}"
+            fi
+        fi
+    else
+        if _only_print_conf; then
+            RHO=\"${RHO}";/http-listner/port->${http_port}\"" java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:$((http_port+1000)) -jar ${rh_dir}/restheart.jar ${options}
+        else
+            RHO=\"${RHO}";/http-listner/port->${http_port}\"" nohup java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:$((http_port+1000)) -jar ${rh_dir}/restheart.jar ${options} > ${repo_dir}/restheart.log &
+            msg "${YELLOW}RESTHeart starting${NOFORMAT}"
+            started=0
+            for i in {1..5}; do
+                if _restheart_running; then
+                    started=1
+                    break
+                else
+                    sleep 1
+                fi
+            done
+            if (( ${started}  == 1 )); then
+                msg "${GREEN}RESTHeart started at localhost:${http_port}${NOFORMAT}"
+                msg "${CYAN}JDWP available for debuggers at localhost:$((http_port+1000))${NOFORMAT}"
+            else
+                msg "${RED}Error starting RESTHeart, check restheart.log${NOFORMAT}"
+            fi
+        fi
+    fi
 
     return 0
 }
@@ -276,10 +333,15 @@ case "${command}" in
     run)
         if _restheart_running; then _kill; fi
         _install
+        if  _requires_mongondb; then _mongodb_running; fi
+        _run
+        ;;
+    build)
+        if _restheart_running; then _kill; fi
+        _install
         _build
         _deploy
-        _apply_profile
-        if [ ${profile} == "restheart" ]; then _mongodb_running; fi
+        if _requires_mongondb; then _mongodb_running; fi
         _run
         ;;
     watch)
@@ -288,8 +350,7 @@ case "${command}" in
             _install
             _build
             _deploy
-            _apply_profile
-            if [ ${profile} == "restheart" ]; then _mongodb_running; fi
+            if _requires_mongondb; then _mongodb_running; fi
             _run
         else
             _watch

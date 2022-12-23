@@ -8,10 +8,10 @@ Documentation for plugins development is available at [https://restheart.org/doc
 
 ```bash
 $ git clone --depth 1 git@github.com:SoftInstigate/restheart-plugin-skeleton.git && cd restheart-plugin-skeleton
-$ ./bin/rh.sh -p microd
+$ ./bin/rh.sh build -o "-s"
 ```
 
-The `rh.sh` helper script builds the plugin and runs RESTHeart with it. The `microd` profile disables the MongoDB API; this avoids to start MongoDB for running it.
+The `rh.sh` helper script builds the plugin and runs RESTHeart with it. The `-s` option (available from RESTHeart 7.2) disables the plugins depending on MongoDB; this avoids to start MongoDB for running it.
 
 The project skeleton defines a dummy *Service* bound at `/srv`:
 
@@ -26,7 +26,7 @@ At first run, `rh.sh` also transparently downloads and installs RESTHeart in the
 
 - Java 17+
 - Docker (optional, only needed to start MongoDB with docker-compose)
-- RESTHeart v7+
+- RESTHeart v7.2+
 
 NOTE: the current `rh.sh` script won't work for RESTHeart 6.x due to different configuration options. You can use the script at tag 6.x as follows:
 
@@ -52,7 +52,7 @@ The helper script `./bin/rh.sh`, builds and deploys the plugin, automatically re
 
 
 ```bash
-$ ./bin/rh.sh
+$ ./bin/rh.sh build
 ```
 
 the script automatically:
@@ -63,38 +63,41 @@ the script automatically:
 
 You can check the log file with `tail -f restheart.log`
 
-> log file path is set in `etc/dev.properties`
-
 The full script options are:
 
 ```terminal
 $ ./bin/rh.sh -h
-Usage: rh.sh [-h] [-b] [-w] [-p profile] [-i [-v version]] [--port http_port] [--no-color] [command]
+Usage: rh.sh [-h] [-b] [-w] [-i [-v version]] [-p http_port] [-o restheart options] [--no-color] [command]
 
 Helper script to Build, Watch and Deploy the plugin, automatically restarting RESTHeart. It also installs RESTHeart.
 
 Commands:
 
-r, run     Build and deploy the plugin, restarting RESTHeart (default)
+b, build   Build and deploy the plugin, restarting RESTHeart (default)
+r, run     start (or restarts) RESTHeart
 k, kill    Kill RESTHeart
 w, watch   Watch sources and build and deploy the plugin on changes, restarting RESTHeart
 
 Available options:
 
--h, --help      Print this help and exit
--i, --install   Force reinstalling RESTHeart
--v, --version   RESTHeart version tag to install (default is latest)
---port          HTTP port to use (default is 8080)
--p, --profile   Profile to use: restheart (default), microd
---no-color      Disable colored output
+-h, --help          Print this help and exit
+-i, --install       Force reinstalling RESTHeart
+-v, --version       RESTHeart version tag to install (default is latest)
+-p, --port          HTTP port to use (default is 8080)
+-o, --options       pass options to RESTHeart
+--no-color          Disable colored output
 
 Examples:
 
-./bin/rh.sh run                        build, deploy the plugin and run RESTHeart with it
-./bin/rh.sh                            like 'run'
-./bin/rh.sh watch                      automatically re-run on code changes
-./bin/rh.sh --port 9090 -p microd run  run on HTTP port 9090 with microd profile
-./bin/rh.sh -i -v 6.3.4 run            Force reinstalling RESHeart version 6.3.4, then run
+./bin/rh.sh build                                 build the plugin, deploy it and run RESTHeart with it
+./bin/rh.sh                                       like 'build'
+./bin/rh.sh start                                 start or restart RESTHeart
+./bin/rh.sh watch                                 automatically re-run on code changes
+./bin/rh.sh --port 9090 -o "-s"                   run on HTTP port 9090 with standalone configuration (-s)
+./bin/rh.sh -o "-c"                               print RESTHeart effective configuration
+./bin/rh.sh -i -v 7.1.0 run                       Force reinstalling RESHeart version 7.1.0, then run
+RHO='/logging/log-level->"debug"' ./bin/rh.sh     run passing the RHO env var to override configuration
+
 
 All commands automatically download and install RESTHeart if needed.
 ```
@@ -108,15 +111,6 @@ The following command can be used to get notified on OSX when RESTHeart is resta
 ```
 
 If you are on Linux, you can tweak the command (`notify_osx.sh` is specific for OSX). Have a look at [this article](https://superuser.com/questions/31917/is-there-a-way-to-show-notification-from-bash-script-in-ubuntu) for some ideas.
-
-## microD profile
-
-Use the profile `microd` to start RESTHeart without the MongoDB Service. We call this profile **microD**, because it is an effective runtime environment for micro-services.
-
-```bash
-$ mvn clean package
-$ ./bin/rh.sh -p microd
-```
 
 ## MongoDB
 
@@ -164,7 +158,7 @@ The script `bin/rh.sh` runs RESTHeart with the debugger enabled, that allows som
 
 ## RESTHeart Configuration
 
-The default configuration is used. The script `bin/rh.sh` define the variable `RHO_PROFILE` that can be modified to apply configuration overrides, see [Modify the configuration with the RHO env var](https://restheart.org/docs/configuration#modify-the-configuration-with-the-rho-env-var)
+The default configuration is used. The environment variable `RHO` can be used to override the configuration. See [Modify the configuration with the RHO env var](https://restheart.org/docs/configuration#modify-the-configuration-with-the-rho-env-var)
 
 ## Dependencies
 
@@ -182,7 +176,7 @@ You can avoid a dependency to be added to the classpath by specifying the scope 
 <dependency>
     <groupId>org.restheart</groupId>
     <artifactId>restheart-commons</artifactId>
-    <version>7.0</version>
+    <version>7.2</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -251,15 +245,6 @@ $ ./target/restheart-plugin-skeleton etc/restheart.yml -e etc/dev.properties
 
 The code includes a super simple "Hello World" service. You can test it as follows:
 
-**HTTP Shell**
-
-> download HTTP Shell from [GitHub](https://github.com/SoftInstigate/http-shell/releases)
-
-```bash
-> h set url :8080
-> h get /srv
-```
-
 **httpie**
 
 ```bash
@@ -275,4 +260,13 @@ $ http :8080/srv
 ```bash
 $ curl localhost:8080/srv
 {"message":"Hello World!sss ss","rnd":"njXZksfKFW"}%%
+```
+
+**HTTP Shell**
+
+> download HTTP Shell from [GitHub](https://github.com/SoftInstigate/http-shell/releases)
+
+```bash
+> h set url :8080
+> h get /srv
 ```
