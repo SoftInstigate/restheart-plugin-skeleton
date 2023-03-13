@@ -91,7 +91,7 @@ Examples:
 
 ./bin/rh.sh build                                 build the plugin, deploy it and run RESTHeart with it
 ./bin/rh.sh                                       like 'build'
-./bin/rh.sh start                                 start or restart RESTHeart
+./bin/rh.sh run                                   start or restart RESTHeart
 ./bin/rh.sh watch                                 automatically re-run on code changes
 ./bin/rh.sh --port 9090 -o "-s"                   run on HTTP port 9090 with standalone configuration (-s)
 ./bin/rh.sh -o "-c"                               print RESTHeart effective configuration
