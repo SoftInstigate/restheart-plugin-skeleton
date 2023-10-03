@@ -263,7 +263,7 @@ _run() {
         if _only_print_conf; then
             RHO="/http-listner/port->${http_port};" java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:$((http_port+1000)) -jar "${rh_dir}"/restheart.jar ${options}
         else
-            RHO="/http-listner/port->${http_port};" nohup java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:$((http_port+1000)) -jar "${rh_dir}"/restheart.jar ${options} > ${repo_dir}/restheart.log &
+            RHO="/http-listner/port->${http_port};" nohup java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:$((http_port+1000)) -jar "${rh_dir}"/restheart.jar ${options} > "${repo_dir}"/restheart.log &
             msg "${YELLOW}RESTHeart starting${NOFORMAT}"
             started=0
             for i in {1..5}; do
