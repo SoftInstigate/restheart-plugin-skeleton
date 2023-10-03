@@ -156,7 +156,7 @@ _install() {
             die "${RED}Failed to download RESTHeart version ${version}${NOFORMAT}"
         fi
 
-        tar -xzf ${cache_dir}/restheart.tar.gz -C ${cache_dir}
+        tar -xzf "${cache_dir}"/restheart.tar.gz -C "${cache_dir}"
         rm -f "${cache_dir}"/restheart.tar.gz
     fi
 
