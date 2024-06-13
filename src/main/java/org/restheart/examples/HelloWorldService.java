@@ -20,21 +20,17 @@ package org.restheart.examples;
  * @author Andrea Di Cesare <andrea@softinstigate.com>
  */
 
+import java.util.Map;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.restheart.exchange.JsonRequest;
 import org.restheart.exchange.JsonResponse;
+import org.restheart.plugins.Inject;
 import org.restheart.plugins.JsonService;
+import org.restheart.plugins.OnInit;
 import org.restheart.plugins.RegisterPlugin;
-import org.restheart.utils.HttpStatus;
-// RandomStringUtils is from Apache commons-lang3 library
-// This is an external dependency i.e. it is not provided by restheart.jar,
-// and thus it must be added to the classpath for the service to work.
-// All (not provided) dependenies are copied to target/lib by the
-// maven-dependency-plugin
-// and then copied to the plugins directory to add them to the classpath
-// by the script restart.sh
-// See https://github.com/SoftInstigate/restheart-plugin-skeleton/blob/master/README.md#dependencies
-import org.apache.commons.lang3.RandomStringUtils;
 import static org.restheart.utils.GsonUtils.object;
+import org.restheart.utils.HttpStatus;
 
 /**
  * Just another Hello World program.
@@ -46,11 +42,21 @@ import static org.restheart.utils.GsonUtils.object;
                 defaultURI = "/srv",
                 blocking = false)
 public class HelloWorldService implements JsonService {
+    private String message;
+
+    @Inject("config")
+    Map<String, Object> args;
+
+    @OnInit
+    public void onInit() {
+        this.message = argOrDefault(this.args, "message", "Hello World!");
+    }
+
     @Override
     public void handle(JsonRequest req, JsonResponse res) {
         switch(req.getMethod()) {
             case GET -> res.setContent(object()
-                .put("message", "Hello World!")
+                .put("message", this.message)
                 .put("rnd", RandomStringUtils.randomAlphabetic(10)));
             case OPTIONS -> handleOptions(req);
             default -> res.setStatusCode(HttpStatus.SC_METHOD_NOT_ALLOWED);
