@@ -179,7 +179,7 @@ Run it with:
 
 ```bash
 $ mkdir target/plugins # the polyglot deployer needs the plugins directory
-$ ./target/restheart-plugin-skeleton etc/restheart.yml -e etc/dev.properties
+$ ./target/restheart-plugin-skeleton
 ```
 
 ## TestService

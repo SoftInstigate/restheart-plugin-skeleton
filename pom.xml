@@ -10,6 +10,7 @@
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <restheart.version>8.0.2</restheart.version>
+    <native.gc>--gc=serial</native.gc><!-- garbage collector 'G1' is on only availabe on Linux and it is better than 'serial' -->
   </properties>
 
   <dependencies>
@@ -55,63 +56,121 @@
       </plugin>
     </plugins>
   </build>
+
   <profiles>
     <profile>
-        <id>native</id>
-        <dependencies>
-          <!-- required -->
-          <dependency>
-            <groupId>org.restheart</groupId>
-            <artifactId>restheart</artifactId>
-            <version>${restheart.version}</version>
-          </dependency>
-          <!-- required -->
-          <dependency>
-            <groupId>org.restheart</groupId>
-            <artifactId>restheart-security</artifactId>
-            <version>${restheart.version}</version>
-          </dependency>
-          <!-- optional, comment out if you don't need the REST MongoDB API -->
-          <dependency>
-            <groupId>org.restheart</groupId>
-            <artifactId>restheart-mongodb</artifactId>
-            <version>${restheart.version}</version>
-          </dependency>
-          <!-- optional, comment out if you don't need to support JavaScript plugins -->
-          <dependency>
-            <groupId>org.restheart</groupId>
-            <artifactId>restheart-polyglot</artifactId>
-            <version>${restheart.version}</version>
-          </dependency>
-          <!-- optional, comment out if you don't need the GraphQL MongoDB API -->
-          <dependency>
-            <groupId>org.restheart</groupId>
-            <artifactId>restheart-graphql</artifactId>
-            <version>${restheart.version}</version>
-          </dependency>
-        </dependencies>
-        <build>
-          <plugins>
-            <plugin>
-              <groupId>org.graalvm.buildtools</groupId>
-              <artifactId>native-maven-plugin</artifactId>
-              <version>0.10.2</version>
-              <extensions>true</extensions>
-              <executions>
-                <execution>
-                  <id>build-native</id>
-                  <goals>
-                    <goal>build</goal>
-                  </goals>
-                  <phase>package</phase>
-                </execution>
-              </executions>
-              <configuration>
-                <mainClass>org.restheart.Bootstrapper</mainClass>
-              </configuration>
-            </plugin>
-          </plugins>
-        </build>
-      </profile>
+      <id>native</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-security</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-mongodb</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-polyglot</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-graphql</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-mongoclient-provider</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.graalvm.truffle</groupId>
+          <artifactId>truffle-runtime</artifactId>
+          <version>24.0.0</version>
+          <scope>provided</scope> <!-- Since Truffle JIT compilation conflicts with Virtual Threads, the 'truffle-runtime' must be excluded from shaded jar. -->
+      </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <archive>
+                <manifest>
+                  <addClasspath>true</addClasspath>
+                  <mainClass>org.restheart.Bootstrapper</mainClass>
+                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                  <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                </manifest>
+                <manifestEntries>
+                  <Build-Time>${maven.build.timestamp}</Build-Time>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>org.apache.commons:commons-lang3</include>
+                  <!-- required -->
+                  <include>org.restheart:restheart</include>
+                  <!-- optional, comment out if you don't need auth^2 -->
+                  <include>org.restheart:restheart-security</include>
+                  <!-- optional, comment out if you don't need any MongoDB APIs -->
+                  <include>org.restheart:restheart-mongoclient-provider</include>
+                  <!-- optional, comment out if you don't need the REST or WebSocket MongoDB API -->
+                  <include>org.restheart:restheart-mongodb</include>
+                  <!-- optional, comment out if you don't need the GraphQL MongoDB API -->
+                  <include>org.restheart:restheart-graphql</include>
+                  <!-- optional, comment out if you don't need to support JavaScript plugins -->
+                  <include>org.restheart:restheart-polyglot</include>
+                </includes>
+              </artifactSet>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>shade</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.graalvm.buildtools</groupId>
+            <artifactId>native-maven-plugin</artifactId>
+            <!-- See https://graalvm.github.io/native-build-tools/latest/maven-plugin.html#configuration-options -->
+            <configuration>
+              <buildArgs>
+                <arg>${native.gc}</arg>
+              </buildArgs>
+              <quickBuild>true</quickBuild>
+            </configuration>
+            <extensions>true</extensions>
+            <executions>
+              <execution>
+                <id>build-native</id>
+                <goals>
+                  <goal>compile-no-fork</goal>
+                </goals>
+                <phase>package</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>
