@@ -9,7 +9,7 @@
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-    <restheart.version>[8.0,8.100)</restheart.version>
+    <restheart.version>8.0.2</restheart.version>
   </properties>
 
   <dependencies>
@@ -88,27 +88,6 @@
             <groupId>org.restheart</groupId>
             <artifactId>restheart-graphql</artifactId>
             <version>${restheart.version}</version>
-          </dependency>
-          <!-- the following dependencies are required for native image -->
-          <dependency>
-            <groupId>com.github.jnr</groupId>
-            <artifactId>jnr-unixsocket</artifactId>
-            <version>0.38.22</version> <!-- check version at https://github.com/mongodb/mongo-java-driver/blob/master/build.gradle -->
-          </dependency>
-          <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-crypt</artifactId>
-            <version>1.8.0</version> <!-- check version at https://github.com/mongodb/mongo-java-driver/blob/master/build.gradle -->
-          </dependency>
-          <dependency>
-            <groupId>org.xerial.snappy</groupId>
-            <artifactId>snappy-java</artifactId>
-            <version>1.1.10.5</version> <!-- check version at https://github.com/mongodb/mongo-java-driver/blob/master/build.gradle -->
-          </dependency>
-          <dependency>
-            <groupId>com.github.luben</groupId>
-            <artifactId>zstd-jni</artifactId>
-            <version>1.5.6-3</version>
           </dependency>
         </dependencies>
         <build>
