@@ -19,7 +19,7 @@ $ git clone --depth 1 git@github.com:SoftInstigate/restheart-plugin-skeleton.git
 $ ./mvnw clean package && docker run --name restheart --rm -p "8080:8080" -v ./target:/opt/restheart/plugins/custom softinstigate/restheart -s
 ```
 
-The `-s` option (standalone modee) disables the plugins depending on MongoDB; this avoids to start MongoDB for running it.
+The `-s` option (standalone mode) disables the plugins depending on MongoDB; this avoids to start MongoDB for running it.
 
 The project skeleton defines a dummy *Service* bound at `/srv`:
 
@@ -66,7 +66,7 @@ $ ./mvnw clean package && docker run --name restheart --rm -p "8080:8080" -v ./t
 
 NOTE: we don't specify the `-s` option, so RESTHeart connects to MongoDB and provides the Data APIs.
 
-Test a simple GET /users request. The `admin` user is creted automatically.
+Test a simple GET /users request. The `admin` user is created automatically.
 
 With curl
 
@@ -160,7 +160,7 @@ Building RESTHeart with your plugin as a native image requires the GraalVM and i
 We suggest to install GraalVM with [sdk](https://sdkman.io/)
 
 ```
-$ sdk install java 21.0.2-graal
+$ sdk install java 21.0.3-graal
 ```
 
 ### Build the native image

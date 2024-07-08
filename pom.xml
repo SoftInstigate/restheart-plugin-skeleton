@@ -9,8 +9,9 @@
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-    <restheart.version>8.0.2</restheart.version>
+    <restheart.version>8.0.4</restheart.version>
     <native.gc>--gc=serial</native.gc><!-- garbage collector 'G1' is on only availabe on Linux and it is better than 'serial' -->
+    <native.quickBuild>true</native.quickBuild>
   </properties>
 
   <dependencies>
@@ -91,18 +92,13 @@
           <artifactId>restheart-mongoclient-provider</artifactId>
           <version>${restheart.version}</version>
         </dependency>
-        <dependency>
-          <groupId>org.graalvm.truffle</groupId>
-          <artifactId>truffle-runtime</artifactId>
-          <version>24.0.0</version>
-          <scope>provided</scope> <!-- Since Truffle JIT compilation conflicts with Virtual Threads, the 'truffle-runtime' must be excluded from shaded jar. -->
-      </dependency>
       </dependencies>
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
+            <version>3.4.2</version>
             <configuration>
               <archive>
                 <manifest>
@@ -120,6 +116,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
+            <version>3.6.0</version>
             <configuration>
               <artifactSet>
                 <includes>
@@ -151,12 +148,13 @@
           <plugin>
             <groupId>org.graalvm.buildtools</groupId>
             <artifactId>native-maven-plugin</artifactId>
+            <version>0.10.2</version>
             <!-- See https://graalvm.github.io/native-build-tools/latest/maven-plugin.html#configuration-options -->
             <configuration>
               <buildArgs>
                 <arg>${native.gc}</arg>
               </buildArgs>
-              <quickBuild>true</quickBuild>
+              <quickBuild>${native.quickBuild}</quickBuild>
             </configuration>
             <extensions>true</extensions>
             <executions>
