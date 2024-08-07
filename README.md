@@ -171,16 +171,19 @@ The `pom.xml` defines the `native` profile. To build your RESTHeart embedding yo
 $ ./mvnw clean package -Pnative
 ```
 
-> note: native image build takes few minutes!
+**NOTE:** native image build takes few minutes!
 
 The binary executable is `./target/restheart-plugin-skeleton`
 
 Run it with:
 
 ```bash
-$ mkdir target/plugins # the polyglot deployer needs the plugins directory
-$ ./target/restheart-plugin-skeleton
+$ RHO="/fullAuthorizer/enabled->true" target/restheart-plugin-skeleton
 ```
+
+**NOTE:** The native image is configured to build with custom plugins and the `restheart-core` and `restheart-polyglot` modules. The default RESTHeart plugins (`restheart-security`, `restheart-mongodb`, `restheart-graphql`, and `restheart-mongoclient-provider`) are currently commented out in the `pom.xml`. To include these plugins in the native image, simply uncomment their dependencies in the `native` profile section of the `pom.xml`.
+
+The `RHO` environment variable enables the `fullAuthorizer`. Since `restheart-security` is excluded by default from this native image, any requests are authorized by default when this variable is set.
 
 ## TestService
 

@@ -7,9 +7,10 @@
   <packaging>jar</packaging>
 
   <properties>
-    <maven.compiler.source>21</maven.compiler.source>
-    <maven.compiler.target>21</maven.compiler.target>
-    <restheart.version>8.0.6</restheart.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.release>21</maven.compiler.release>
+    <restheart.version>8.1.0-SNAPSHOT</restheart.version>
     <native.gc>--gc=serial</native.gc><!-- garbage collector 'G1' is on only availabe on Linux and it is better than 'serial' -->
     <native.quickBuild>true</native.quickBuild>
   </properties>
@@ -58,9 +59,7 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
-              <!-- the following settings just include dependencies
-              of runtime and compile scopes -->
-              <excludeTransitive>true</excludeTransitive>
+              <!-- include dependencies of runtime and compile scopes -->
               <includeScope>runtime</includeScope>
             </configuration>
           </execution>
@@ -73,36 +72,49 @@
     <profile>
       <id>native</id>
       <dependencies>
-        <dependency>
+        <dependency> <!-- required since it is defined as provided in default profile -->
+            <groupId>org.restheart</groupId>
+            <artifactId>restheart-commons</artifactId>
+            <version>${restheart.version}</version>
+        </dependency>
+        <dependency> <!-- required -->
           <groupId>org.restheart</groupId>
-          <artifactId>restheart</artifactId>
+          <artifactId>restheart-core</artifactId>
           <version>${restheart.version}</version>
         </dependency>
-        <dependency>
+        <dependency> <!-- required -->
+            <groupId>org.restheart</groupId>
+            <artifactId>restheart-polyglot</artifactId>
+            <version>${restheart.version}</version>
+        </dependency>
+
+        <!-- OPTIONAL, uncomment to add security plugins, requires restheart-mongoclient-provider -->
+        <!-- <dependency>
           <groupId>org.restheart</groupId>
           <artifactId>restheart-security</artifactId>
           <version>${restheart.version}</version>
-        </dependency>
-        <dependency>
+        </dependency> -->
+
+        <!-- OPTIONAL, uncomment to add rest and websocket mongodb plugins, requires restheart-mongoclient-provider -->
+        <!-- <dependency>
           <groupId>org.restheart</groupId>
           <artifactId>restheart-mongodb</artifactId>
           <version>${restheart.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.restheart</groupId>
-          <artifactId>restheart-polyglot</artifactId>
-          <version>${restheart.version}</version>
-        </dependency>
-        <dependency>
+        </dependency> -->
+
+        <!-- OPTIONAL, uncomment to add graphql mongodb plugin, requires restheart-mongoclient-provider -->
+        <!-- <dependency>
           <groupId>org.restheart</groupId>
           <artifactId>restheart-graphql</artifactId>
           <version>${restheart.version}</version>
-        </dependency>
-        <dependency>
+        </dependency> -->
+
+        <!-- OPTIONAL, required by restheart-security, restheart-mongodb and restheart-graphql -->
+        <!-- <dependency>
           <groupId>org.restheart</groupId>
           <artifactId>restheart-mongoclient-provider</artifactId>
           <version>${restheart.version}</version>
-        </dependency>
+        </dependency> -->
       </dependencies>
       <build>
         <plugins>
@@ -125,38 +137,6 @@
             </configuration>
           </plugin>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-            <version>3.6.0</version>
-            <configuration>
-              <artifactSet>
-                <includes>
-                  <include>org.apache.commons:commons-lang3</include>
-                  <!-- required -->
-                  <include>org.restheart:restheart</include>
-                  <!-- optional, comment out if you don't need auth^2 -->
-                  <include>org.restheart:restheart-security</include>
-                  <!-- optional, comment out if you don't need any MongoDB APIs -->
-                  <include>org.restheart:restheart-mongoclient-provider</include>
-                  <!-- optional, comment out if you don't need the REST or WebSocket MongoDB API -->
-                  <include>org.restheart:restheart-mongodb</include>
-                  <!-- optional, comment out if you don't need the GraphQL MongoDB API -->
-                  <include>org.restheart:restheart-graphql</include>
-                  <!-- optional, comment out if you don't need to support JavaScript plugins -->
-                  <include>org.restheart:restheart-polyglot</include>
-                </includes>
-              </artifactSet>
-            </configuration>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>shade</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <groupId>org.graalvm.buildtools</groupId>
             <artifactId>native-maven-plugin</artifactId>
             <version>0.10.2</version>
@@ -175,6 +155,25 @@
                   <goal>compile-no-fork</goal>
                 </goals>
                 <phase>package</phase>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+              <execution>
+                <id>mkdir-plugins-dir</id>
+                <phase>package</phase>
+                <configuration>
+                  <target>
+                    <mkdir dir="./target/plugins" />
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
               </execution>
             </executions>
           </plugin>
