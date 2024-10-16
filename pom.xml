@@ -117,10 +117,10 @@
         </dependency> -->
 
 
-        <!-- OPTIONAL, uncomment to add monitoring plugin -->
+        <!-- OPTIONAL, uncomment to add metrics plugin -->
         <!-- <dependency>
           <groupId>org.restheart</groupId>
-          <artifactId>restheart-monitoring</artifactId>
+          <artifactId>restheart-metrics</artifactId>
           <version>${restheart.version}</version>
         </dependency> -->
       </dependencies>
