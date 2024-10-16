@@ -175,6 +175,6 @@ Run it with:
 $ RHO="/fullAuthorizer/enabled->true" target/restheart-plugin-skeleton
 ```
 
-**NOTE:** The native image is configured to build with custom plugins and the `restheart` and `restheart-polyglot` modules. The default RESTHeart plugins (`restheart-security`, `restheart-mongodb`, `restheart-graphql`, `restheart-mongoclient-provider` and`restheart-monitoring`) are currently commented out in the `pom.xml`. To include these plugins in the native image, simply uncomment their dependencies in the `native` profile section of the `pom.xml`.
+**NOTE:** The native image is configured to build with custom plugins and the `restheart` and `restheart-polyglot` modules. The default RESTHeart plugins (`restheart-security`, `restheart-mongodb`, `restheart-graphql`, `restheart-mongoclient-provider` and`restheart-metrics`) are currently commented out in the `pom.xml`. To include these plugins in the native image, simply uncomment their dependencies in the `native` profile section of the `pom.xml`.
 
 The `RHO` environment variable enables the `fullAuthorizer`. Since `restheart-security` is excluded by default from this native image, any requests are authorized by default when this variable ius set.
