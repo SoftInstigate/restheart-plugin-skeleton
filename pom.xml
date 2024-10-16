@@ -115,6 +115,14 @@
           <artifactId>restheart-mongoclient-provider</artifactId>
           <version>${restheart.version}</version>
         </dependency> -->
+
+
+        <!-- OPTIONAL, uncomment to add monitoring plugin -->
+        <!-- <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-monitoring</artifactId>
+          <version>${restheart.version}</version>
+        </dependency> -->
       </dependencies>
       <build>
         <plugins>
