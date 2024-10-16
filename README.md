@@ -112,22 +112,20 @@ The dependencies jars are copied by the `maven-dependency-plugin` to the `target
 
 ### Avoid duplicate jars
 
-`restheart.jar` embeds several jars. You should avoid adding to the classpath a jar that is already included in it.
+`restheart` is packaged several librsri3s. You should avoid adding to the classpath a jar that is already included with it.
 
-You can avoid a dependency to be added to the classpath by specifying the scope `provided` in the pom dependency. For instance, the `restheart-commons` dependency has the scope `provided` because it is already embedded in `restheart.jar`:
+You can avoid a dependency to be added to the classpath by specifying the scope `provided` in the pom dependency. For instance, the `restheart-commons` dependency has the scope `provided` because it is already packaged with `restheart.jar`:
 
 ```xml
 <dependency>
     <groupId>org.restheart</groupId>
     <artifactId>restheart-commons</artifactId>
-    <version>8.0</version>
+    <version>8.1.0</version>
     <scope>provided</scope>
 </dependency>
 ```
 
-Other libraries that are embedded in `restheart.jar` are the MongoDB driver and Unirest http library.
-
-You can check which libraries are embedded in `restheart.jar` as follows:
+You can check which libraries are pacaked with `restheart` as follows:
 
 ```bash
 $ git clone https://github.com/SoftInstigate/restheart.git && cd restheart
@@ -181,38 +179,6 @@ Run it with:
 $ RHO="/fullAuthorizer/enabled->true" target/restheart-plugin-skeleton
 ```
 
-**NOTE:** The native image is configured to build with custom plugins and the `restheart` and `restheart-polyglot` modules. The default RESTHeart plugins (`restheart-security`, `restheart-mongodb`, `restheart-graphql`, and `restheart-mongoclient-provider`) are currently commented out in the `pom.xml`. To include these plugins in the native image, simply uncomment their dependencies in the `native` profile section of the `pom.xml`.
+**NOTE:** The native image is configured to build with custom plugins and the `restheart` and `restheart-polyglot` modules. The default RESTHeart plugins (`restheart-security`, `restheart-mongodb`, `restheart-graphql`, `restheart-mongoclient-provider` and`restheart-monitoring`) are currently commented out in the `pom.xml`. To include these plugins in the native image, simply uncomment their dependencies in the `native` profile section of the `pom.xml`.
 
 The `RHO` environment variable enables the `fullAuthorizer`. Since `restheart-security` is excluded by default from this native image, any requests are authorized by default when this variable is set.
-
-## TestService
-
-The code includes a super simple "Hello World" service. You can test it as follows:
-
-**httpie**
-
-```bash
-$ http :8080/srv
-
-{
-    "msg": "Hello World!"
-}
-```
-
-**curl**
-
-```bash
-$ curl localhost:8080/srv
-{"message":"Hello World!sss ss","rnd":"njXZksfKFW"}%%
-```
-
-**HTTP Shell**
-
-HTTP Shell provides developers with a modern alternative to HTTP clients for interacting with APIs.
-
-> download HTTP Shell from [GitHub](https://github.com/SoftInstigate/http-shell/releases)
-
-```bash
-> h set url :8080
-> h get /srv
-```
