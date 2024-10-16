@@ -10,7 +10,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.release>21</maven.compiler.release>
-    <restheart.version>8.2.0-SNAPSHOT</restheart.version>
+    <restheart.version>8.1.0</restheart.version>
     <native.gc>--gc=serial</native.gc><!-- garbage collector 'G1' is on only availabe on Linux and it is better than 'serial' -->
     <native.quickBuild>true</native.quickBuild>
   </properties>
