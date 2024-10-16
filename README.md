@@ -83,10 +83,6 @@ $ http -a admin:secret :8080/users
 
 You might want to check the [REST API Tutorial](https://restheart.org/docs/mongodb-rest/tutorial) and the [GraphQL Tutorial](https://restheart.org/docs/mongodb-graphql/tutorial)
 
-### Init MongoDB
-
-The script `docker/docker-entrypoint-initdb.d/initdb.js` is executed by the mongo shell in the MongoDB container and allows initializing MongoDB, for instance creating test data.
-
 ## RESTHeart Configuration
 
 The default configuration is used. The environment variable `RHO` can be used to override the configuration. See [Change the configuration in Docker container](https://restheart.org/docs/configuration#change-the-configuration-in-docker-container)
@@ -106,13 +102,13 @@ $ curl localhost:8080/srv
 
 ## Dependencies
 
-The dependencies jars are copied by the `maven-dependency-plugin` to the `target/lib` directory. Those jars are copied to the RESTHeart's `plugins` directory to add them to to the classpath by the script `bin/restart.sh`.
+The dependencies jars are copied by the `maven-dependency-plugin` to the `target/lib` directory. Those jars are automatically added to the classpath by RESTHeart.
 
 > When you add a dependency, you must restart the RESTHeart container.
 
 ### Avoid duplicate jars
 
-`restheart` is packaged several librsri3s. You should avoid adding to the classpath a jar that is already included with it.
+`restheart` is packaged with several libraries. You should avoid adding to the classpath a jar that is already packaged with it.
 
 You can avoid a dependency to be added to the classpath by specifying the scope `provided` in the pom dependency. For instance, the `restheart-commons` dependency has the scope `provided` because it is already packaged with `restheart.jar`:
 
@@ -125,7 +121,7 @@ You can avoid a dependency to be added to the classpath by specifying the scope 
 </dependency>
 ```
 
-You can check which libraries are pacaked with `restheart` as follows:
+You can check which libraries are already packaged with `restheart` as follows:
 
 ```bash
 $ git clone https://github.com/SoftInstigate/restheart.git && cd restheart
@@ -181,4 +177,4 @@ $ RHO="/fullAuthorizer/enabled->true" target/restheart-plugin-skeleton
 
 **NOTE:** The native image is configured to build with custom plugins and the `restheart` and `restheart-polyglot` modules. The default RESTHeart plugins (`restheart-security`, `restheart-mongodb`, `restheart-graphql`, `restheart-mongoclient-provider` and`restheart-monitoring`) are currently commented out in the `pom.xml`. To include these plugins in the native image, simply uncomment their dependencies in the `native` profile section of the `pom.xml`.
 
-The `RHO` environment variable enables the `fullAuthorizer`. Since `restheart-security` is excluded by default from this native image, any requests are authorized by default when this variable is set.
+The `RHO` environment variable enables the `fullAuthorizer`. Since `restheart-security` is excluded by default from this native image, any requests are authorized by default when this variable ius set.
