@@ -178,3 +178,34 @@ $ RHO="/fullAuthorizer/enabled->true" target/restheart-plugin-skeleton
 **NOTE:** The native image is configured to build with custom plugins and the `restheart` and `restheart-polyglot` modules. The default RESTHeart plugins (`restheart-security`, `restheart-mongodb`, `restheart-graphql`, `restheart-mongoclient-provider` and`restheart-metrics`) are currently commented out in the `pom.xml`. To include these plugins in the native image, simply uncomment their dependencies in the `native` profile section of the `pom.xml`.
 
 The `RHO` environment variable enables the `fullAuthorizer`. Since `restheart-security` is excluded by default from this native image, any requests are authorized by default when this variable ius set.
+
+## Maven Profiles
+
+This project provides additional Maven profiles for building and packaging RESTHeart with specific dependencies.
+
+### Available Profiles
+
+| Profile ID             | Description                                                                       |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| `native`               | Builds a native image using GraalVM with custom plugins.                          |
+| `security`             | Includes the `restheart-security` module for advanced security.                   |
+| `mongodb`              | Adds MongoDB support with the `restheart-mongodb` module.                         |
+| `graphql`              | Enables GraphQL APIs using the `restheart-graphql` module.                        |
+| `mongoclient-provider` | Provides a MongoClient provider with the `restheart-mongoclient-provider` module. |
+| `metrics`              | Adds monitoring capabilities with the `restheart-metrics` module.                 |
+
+### Using Maven Profiles
+
+To activate a specific profile, use the `-P` option when running Maven commands. For example:
+
+```bash
+$ ./mvnw clean package -Psecurity
+```
+
+You can combine multiple profiles as needed. For example:
+
+```bash
+$ ./mvnw clean package -Psecurity,mongodb
+```
+
+For more details about the profiles and their dependencies, refer to the `pom.xml` file.
