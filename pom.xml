@@ -152,5 +152,55 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>security</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-security</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>mongodb</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-mongodb</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>graphql</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-graphql</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>mongoclient-provider</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-mongoclient-provider</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>metrics</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-metrics</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>
