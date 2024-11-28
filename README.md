@@ -29,7 +29,7 @@ Follow these steps to set up and run the project:
    ```
 3. Build and run the container:
    ```bash
-   $ ./mvnw clean package && docker run --name restheart --rm -p "8080:8080" -v ./target:/opt/restheart/plugins/custom softinstigate/restheart -s
+   $ ./mvnw clean package && docker run --pull=always --name restheart --rm -p "8080:8080" -v ./target:/opt/restheart/plugins/custom softinstigate/restheart -s
    ```
 
 > **Note:** The `-s` option (**standalone mode**) disables MongoDB-dependent plugins. Use this option if you do not intend to connect to a MongoDB instance during runtime.
