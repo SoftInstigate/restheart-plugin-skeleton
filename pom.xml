@@ -37,7 +37,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.16.0</version>
+      <version>3.17.0</version>
     </dependency>
   </dependencies>
 
@@ -50,7 +50,7 @@
         see https://restheart.org/docs/plugins/deploy/ -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.8.0</version>
+        <version>3.8.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -73,9 +73,9 @@
       <id>native</id>
       <dependencies>
         <dependency> <!-- required since it is defined as provided in default profile -->
-            <groupId>org.restheart</groupId>
-            <artifactId>restheart-commons</artifactId>
-            <version>${restheart.version}</version>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-commons</artifactId>
+          <version>${restheart.version}</version>
         </dependency>
         <dependency> <!-- required -->
           <groupId>org.restheart</groupId>
@@ -83,46 +83,10 @@
           <version>${restheart.version}</version>
         </dependency>
         <dependency> <!-- required -->
-            <groupId>org.restheart</groupId>
-            <artifactId>restheart-polyglot</artifactId>
-            <version>${restheart.version}</version>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-polyglot</artifactId>
+          <version>${restheart.version}</version>
         </dependency>
-
-        <!-- OPTIONAL, uncomment to add security plugins, requires restheart-mongoclient-provider -->
-        <!-- <dependency>
-          <groupId>org.restheart</groupId>
-          <artifactId>restheart-security</artifactId>
-          <version>${restheart.version}</version>
-        </dependency> -->
-
-        <!-- OPTIONAL, uncomment to add rest and websocket mongodb plugins, requires restheart-mongoclient-provider -->
-        <!-- <dependency>
-          <groupId>org.restheart</groupId>
-          <artifactId>restheart-mongodb</artifactId>
-          <version>${restheart.version}</version>
-        </dependency> -->
-
-        <!-- OPTIONAL, uncomment to add graphql mongodb plugin, requires restheart-mongoclient-provider -->
-        <!-- <dependency>
-          <groupId>org.restheart</groupId>
-          <artifactId>restheart-graphql</artifactId>
-          <version>${restheart.version}</version>
-        </dependency> -->
-
-        <!-- OPTIONAL, required by restheart-security, restheart-mongodb and restheart-graphql -->
-        <!-- <dependency>
-          <groupId>org.restheart</groupId>
-          <artifactId>restheart-mongoclient-provider</artifactId>
-          <version>${restheart.version}</version>
-        </dependency> -->
-
-
-        <!-- OPTIONAL, uncomment to add metrics plugin -->
-        <!-- <dependency>
-          <groupId>org.restheart</groupId>
-          <artifactId>restheart-metrics</artifactId>
-          <version>${restheart.version}</version>
-        </dependency> -->
       </dependencies>
       <build>
         <plugins>
@@ -147,7 +111,7 @@
           <plugin>
             <groupId>org.graalvm.buildtools</groupId>
             <artifactId>native-maven-plugin</artifactId>
-            <version>0.10.2</version>
+            <version>0.10.3</version>
             <!-- See https://graalvm.github.io/native-build-tools/latest/maven-plugin.html#configuration-options -->
             <configuration>
               <buildArgs>
