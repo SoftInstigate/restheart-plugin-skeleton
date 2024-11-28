@@ -152,7 +152,7 @@ RESTHeart supports building native images with GraalVM for optimized startup tim
    $ RHO="/fullAuthorizer/enabled->true" target/restheart-plugin-skeleton
    ```
 
-For more details, check [Deploy Java Plugins on RESTHeart native](https://restheart.org/docs/plugins/deploy/#deploy-java-plugins-on-restheart-native).
+For more details, check [Deploy Java Plugins on RESTHeart native](https://restheart.org/docs/plugins/deploy#deploy-java-plugins-on-restheart-native).
 
 ---
 
