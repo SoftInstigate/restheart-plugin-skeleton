@@ -17,7 +17,13 @@ Check also the [RESTHeart Greetings Services Tutorial](https://restheart.org/doc
 
 ## Quick Start
 
-Follow these steps to set up and run the project:
+### Use the RESTHeart command line interface
+
+🚀 To run and develop this project you can now use the new [RESTHeart command line interface](https://github.com/SoftInstigate/restheart-cli/tree/master). It provides a convenient interface for watching for code changes and automatically rebuilding/redeploying RESTHeart plugins.
+
+### Run with Docker
+
+Follow these steps if you prefer to set up and run the project with docker:
 
 1. Clone the repository:
    ```bash
