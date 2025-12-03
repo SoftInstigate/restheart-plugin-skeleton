@@ -22,12 +22,13 @@ description = 'restheart-plugin-skeleton'
 def restheartVersion = '[8.12.0,8.1000.0)'
 
 // Profile-based configurations
-def nativeProfile = findProperty('native') == 'true'
-def securityProfile = findProperty('security') == 'true'
-def mongodbProfile = findProperty('mongodb') == 'true'
-def graphqlProfile = findProperty('graphql') == 'true'
-def mongoclientProviderProfile = findProperty('mongoclient-provider') == 'true'
-def metricsProfile = findProperty('metrics') == 'true'
+// When -Pname is passed, the property exists (even if empty)
+def nativeProfile = project.hasProperty('native')
+def securityProfile = project.hasProperty('security')
+def mongodbProfile = project.hasProperty('mongodb')
+def graphqlProfile = project.hasProperty('graphql')
+def mongoclientProviderProfile = project.hasProperty('mongoclient-provider')
+def metricsProfile = project.hasProperty('metrics')
 
 java {
     toolchain {
@@ -77,15 +78,14 @@ tasks.named('jar') {
     archiveVersion = ''
     destinationDirectory = file("$rootDir/target")
     
-    if (nativeProfile) {
-        manifest {
-            attributes(
-                'Main-Class': 'org.restheart.Bootstrapper',
-                'Implementation-Title': project.name,
-                'Implementation-Version': project.version,
-                'Build-Time': new Date().toInstant().toString()
-            )
-        }
+    // Always set Main-Class for native builds
+    manifest {
+        attributes(
+            'Main-Class': 'org.restheart.Bootstrapper',
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Build-Time': new Date().toInstant().toString()
+        )
     }
 }
 
@@ -98,6 +98,16 @@ tasks.register('copyDependencies', Copy) {
 // Make build depend on copyDependencies
 tasks.named('build') {
     dependsOn copyDependencies
+}
+
+// When native profile is active, make build depend on nativeCompile
+// Must be done in afterEvaluate because nativeCompile is created by the GraalVM plugin
+afterEvaluate {
+    if (nativeProfile) {
+        tasks.named('build').configure {
+            dependsOn tasks.named('nativeCompile')
+        }
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -118,7 +128,10 @@ if (nativeProfile) {
         binaries {
             main {
                 imageName = 'restheart-plugin-skeleton'
+                mainClass = 'org.restheart.Bootstrapper'
+                sharedLibrary = false
                 buildArgs.add(nativeGc)
+                buildArgs.add('--no-fallback')
                 quickBuild = nativeQuickBuild
             }
         }
@@ -128,10 +141,32 @@ if (nativeProfile) {
         doLast {
             def outputDir = file("$rootDir/target")
             outputDir.mkdirs()
-            def nativeImage = outputFile.get().asFile
-            def targetImage = file("$rootDir/target/${nativeImage.name}")
-            nativeImage.bytes.withCloseable { bytes ->
-                targetImage.bytes = bytes
+            
+            // Copy the native image to target directory
+            def buildDir = file("$rootDir/build/native/nativeCompile")
+            def nativeExe = file("$buildDir/restheart-plugin-skeleton")
+            
+            // Also check for dylib on macOS or exe on Windows
+            if (!nativeExe.exists()) {
+                nativeExe = file("$buildDir/restheart-plugin-skeleton.dylib")
+            }
+            if (!nativeExe.exists()) {
+                nativeExe = file("$buildDir/restheart-plugin-skeleton.exe")
+            }
+            
+            if (nativeExe.exists()) {
+                def targetName = nativeExe.name.replace('.dylib', '').replace('.exe', '')
+                def targetExe = file("$rootDir/target/$targetName")
+                copy {
+                    from nativeExe
+                    into outputDir
+                    rename { targetName }
+                }
+                // Make executable
+                targetExe.setExecutable(true)
+                println "Native image copied to: $targetExe"
+            } else {
+                println "Warning: Native image not found in $buildDir"
             }
             
             // Create plugins directory
