@@ -199,6 +199,7 @@ For more details, check [Deploy Java Plugins on RESTHeart native](https://resthe
 | `graphql`              | Enables GraphQL APIs using the `restheart-graphql` module.                        |
 | `mongoclient-provider` | Provides a MongoClient provider with the `restheart-mongoclient-provider` module. |
 | `metrics`              | Adds monitoring capabilities with the `restheart-metrics` module.                 |
+| `all-restheart-plugins`| Convenience profile that includes `security`, `mongodb`, `graphql`, `mongoclient-provider`, and `metrics`. |
 
 ### Using Maven Profiles
 
@@ -214,6 +215,12 @@ Combine profiles as needed:
 ./mvnw clean package -Psecurity,mongodb
 ```
 
+Use the convenience profile to include all optional RESTHeart modules:
+
+```bash
+./mvnw clean package -Pall-restheart-plugins
+```
+
 For more details, refer to the `pom.xml` file.
 
 ### Profile Matrix (Common Scenarios)
@@ -227,6 +234,7 @@ Use this matrix to pick the right profiles and commands for typical setups.
 | Secured MongoDB API | `security,mongodb` | \`./mvnw clean package -Psecurity,mongodb\` | Same as MongoDB development (without `-s`) |
 | GraphQL over MongoDB | `graphql,mongodb` (add `security` if needed) | \`./mvnw clean package -Pgraphql,mongodb\` | Same as MongoDB development (without `-s`) |
 | Metrics enabled | `metrics` (+ combine with others) | \`./mvnw clean package -Pmetrics\` | Combine with your chosen run mode |
+| All optional modules (JVM run) | `all-restheart-plugins` | \`./mvnw clean package -Pall-restheart-plugins\` | Use appropriate Docker run (without `-s` if MongoDB is needed) |
 | Native executable (bundles RESTHeart + plugin) | `native` (+ combine modules at build time is not supported; native already bundles required RESTHeart artifacts) | \`sdk install java 21.0.3-graal\` then \`./mvnw clean package -Pnative\` | \`RHO="/fullAuthorizer/enabled->true" target/restheart-plugin-skeleton\` |
 
 Notes:

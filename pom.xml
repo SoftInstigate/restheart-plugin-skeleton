@@ -230,5 +230,35 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>all-restheart-plugins</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-security</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-mongodb</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-graphql</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-mongoclient-provider</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.restheart</groupId>
+          <artifactId>restheart-metrics</artifactId>
+          <version>${restheart.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>
