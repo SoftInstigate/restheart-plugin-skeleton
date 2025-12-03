@@ -1,5 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>restheart-plugin-skeleton</artifactId>
   <groupId>org.restheart</groupId>
@@ -9,8 +13,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.release>21</maven.compiler.release>
-    <restheart.version>[8.1.6,8.1000.0)</restheart.version>
+    <maven.compiler.release>24</maven.compiler.release>
+    <restheart.version>[8.12.0,8.1000.0)</restheart.version>
     <native.gc>--gc=serial</native.gc><!-- garbage collector 'G1' is only availabe on Linux and it is better than 'serial' -->
     <native.quickBuild>true</native.quickBuild>
   </properties>
@@ -37,7 +41,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.17.0</version>
+      <version>3.18.0</version>
     </dependency>
   </dependencies>
 
@@ -85,7 +89,6 @@
             </goals>
             <configuration>
               <rules>
-                <DependencyConvergence />
                 <banDuplicatePomDependencyVersions />
               </rules>
               <fail>true</fail>
