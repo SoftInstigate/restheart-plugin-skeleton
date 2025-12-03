@@ -57,7 +57,7 @@ public class HelloWorldService implements JsonService {
         switch(req.getMethod()) {
             case GET -> res.setContent(object()
                 .put("message", this.message)
-                .put("rnd", RandomStringUtils.randomAlphabetic(10)));
+                .put("rnd", RandomStringUtils.insecure().nextAlphabetic(10)));
             case OPTIONS -> handleOptions(req);
             default -> res.setStatusCode(HttpStatus.SC_METHOD_NOT_ALLOWED);
         }
