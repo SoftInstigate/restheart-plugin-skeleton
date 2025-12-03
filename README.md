@@ -34,11 +34,14 @@ Follow the [Usage Guide](https://github.com/SoftInstigate/restheart-cli/blob/mas
    ```
 
 2. **Build (choose Maven or Gradle):**
-   ```bash
-   # Maven
-   ./mvnw clean package
    
-   # Gradle
+   Maven:
+   ```bash
+   ./mvnw clean package
+   ```
+   
+   Gradle:
+   ```bash
    ./gradlew clean build
    ```
    
@@ -46,9 +49,7 @@ Follow the [Usage Guide](https://github.com/SoftInstigate/restheart-cli/blob/mas
 
 3. **Run with Docker:**
    ```bash
-   docker run --pull=always --name restheart --rm -p "8080:8080" \
-     -v ./target:/opt/restheart/plugins/custom \
-     softinstigate/restheart -s
+   docker run --pull=always --name restheart --rm -p "8080:8080" -v ./target:/opt/restheart/plugins/custom softinstigate/restheart -s
    ```
    
    > **Note:** The `-s` flag runs in **standalone mode** (no MongoDB). Remove it to enable MongoDB-dependent plugins.
@@ -83,23 +84,26 @@ To run RESTHeart with MongoDB:
 1. **Start MongoDB:**
    ```bash
    docker run -d --name mongodb -p 27017:27017 mongo --replSet=rs0
+   ```
+   ```bash
    docker exec mongodb mongosh --quiet --eval "rs.initiate()"
    ```
 
-2. **Build with MongoDB profile:**
-   ```bash
-   # Maven
-   ./mvnw clean package -Pmongodb
+2. **Build your plugin:**
    
-   # Gradle
-   ./gradlew clean build -Pmongodb
+   Maven:
+   ```bash
+   ./mvnw clean package
+   ```
+   
+   Gradle:
+   ```bash
+   ./gradlew clean build
    ```
 
-3. **Run RESTHeart (without -s flag):**
+3. **Run RESTHeart (without -s flag to enable MongoDB plugins):**
    ```bash
-   docker run --name restheart --rm -p "8080:8080" \
-     -v ./target:/opt/restheart/plugins/custom \
-     softinstigate/restheart
+   docker run --name restheart --rm -p "8080:8080" -v ./target:/opt/restheart/plugins/custom softinstigate/restheart
    ```
 
 4. **Test:**
@@ -109,47 +113,49 @@ To run RESTHeart with MongoDB:
 
 ⚠️ **Warning:** This setup is insecure - for development/testing only.
 
+> **Note:** Your plugin only depends on `restheart-commons` (provided scope). RESTHeart running in Docker already includes all its plugins (MongoDB, Security, GraphQL, etc.).
+
 ---
 
-## Available Profiles
+## Profiles for Native Image Builds
 
-Profiles add RESTHeart modules to your build:
+> **Important:** These profiles are **only** used when building native executables (`-Pnative`). They bundle RESTHeart plugins into the native executable. For regular JAR builds, your plugin only depends on `restheart-commons`.
 
 | Profile                  | Description                                  | Maven Syntax         | Gradle Syntax        |
 | ------------------------ | -------------------------------------------- | -------------------- | -------------------- |
 | `native`                 | Build native executable with GraalVM         | `-Pnative`           | `-Pnative`           |
-| `security`               | Add authentication and authorization         | `-Psecurity`         | `-Psecurity`         |
-| `mongodb`                | Add MongoDB REST API support                 | `-Pmongodb`          | `-Pmongodb`          |
-| `graphql`                | Add GraphQL API support                      | `-Pgraphql`          | `-Pgraphql`          |
-| `mongoclient-provider`   | Add MongoDB client provider                  | `-Pmongoclient-provider` | `-Pmongoclient-provider` |
-| `metrics`                | Add monitoring and metrics                   | `-Pmetrics`          | `-Pmetrics`          |
-| `all-restheart-plugins`  | Include all above modules (except native)    | `-Pall-restheart-plugins` | `-Pall-restheart-plugins` |
+| `security`               | Bundle RESTHeart Security into native image  | `-Psecurity`         | `-Psecurity`         |
+| `mongodb`                | Bundle RESTHeart MongoDB into native image   | `-Pmongodb`          | `-Pmongodb`          |
+| `graphql`                | Bundle RESTHeart GraphQL into native image   | `-Pgraphql`          | `-Pgraphql`          |
+| `mongoclient-provider`   | Bundle MongoDB client provider               | `-Pmongoclient-provider` | `-Pmongoclient-provider` |
+| `metrics`                | Bundle RESTHeart Metrics into native image   | `-Pmetrics`          | `-Pmetrics`          |
+| `all-restheart-plugins`  | Bundle all RESTHeart plugins                 | `-Pall-restheart-plugins` | `-Pall-restheart-plugins` |
 
 ### Examples
 
+**Native executable with Security and MongoDB plugins bundled:**
+
+Maven:
 ```bash
-# Maven: Native build with security and MongoDB
 ./mvnw clean package -Pnative,security,mongodb
-
-# Gradle: Native build with security and MongoDB
-./gradlew clean build -Pnative -Psecurity -Pmongodb
-
-# Maven: All modules
-./mvnw clean package -Pall-restheart-plugins
-
-# Gradle: All modules
-./gradlew clean build -Pall-restheart-plugins
 ```
 
-### Common Scenarios
+Gradle:
+```bash
+./gradlew clean build -Pnative -Psecurity -Pmongodb
+```
 
-| Scenario                      | Maven Command                                | Gradle Command                               |
-| ----------------------------- | -------------------------------------------- | -------------------------------------------- |
-| Standalone demo               | `./mvnw clean package`                       | `./gradlew clean build`                      |
-| MongoDB development           | `./mvnw clean package -Pmongodb`             | `./gradlew clean build -Pmongodb`            |
-| Secured MongoDB API           | `./mvnw clean package -Psecurity,mongodb`    | `./gradlew clean build -Psecurity -Pmongodb` |
-| GraphQL over MongoDB          | `./mvnw clean package -Pgraphql,mongodb`     | `./gradlew clean build -Pgraphql -Pmongodb`  |
-| All modules                   | `./mvnw clean package -Pall-restheart-plugins` | `./gradlew clean build -Pall-restheart-plugins` |
+**Native executable with all RESTHeart plugins bundled:**
+
+Maven:
+```bash
+./mvnw clean package -Pnative,all-restheart-plugins
+```
+
+Gradle:
+```bash
+./gradlew clean build -Pnative -Pall-restheart-plugins
+```
 
 ---
 
@@ -168,29 +174,38 @@ sdk use java 24.0.2-graalce
 ### Build Commands
 
 **Quick build** (faster, default):
-```bash
-# Maven
-./mvnw clean package -Pnative
 
-# Gradle
+Maven:
+```bash
+./mvnw clean package -Pnative
+```
+
+Gradle:
+```bash
 ./gradlew clean build -Pnative
 ```
 
 **Full optimization** (slower build, faster runtime):
-```bash
-# Maven
-./mvnw clean package -Pnative -Dnative.quickBuild=false
 
-# Gradle
+Maven:
+```bash
+./mvnw clean package -Pnative -Dnative.quickBuild=false
+```
+
+Gradle:
+```bash
 ./gradlew clean build -Pnative -Pnative.quickBuild=false
 ```
 
 **Custom garbage collector** (G1 on Linux, serial elsewhere):
-```bash
-# Maven
-./mvnw clean package -Pnative -Dnative.gc=--gc=G1
 
-# Gradle
+Maven:
+```bash
+./mvnw clean package -Pnative -Dnative.gc=--gc=G1
+```
+
+Gradle:
+```bash
 ./gradlew clean build -Pnative -Pnative.gc=--gc=G1
 ```
 
@@ -221,11 +236,7 @@ target/
 Override settings without rebuilding using the `RHO` environment variable:
 
 ```bash
-docker run --name restheart --rm \
-  -e RHO="/http-listener/host->'0.0.0.0';/helloWorldService/message->'Ciao Mondo!'" \
-  -p "8080:8080" \
-  -v ./target:/opt/restheart/plugins/custom \
-  softinstigate/restheart -s
+docker run --name restheart --rm -e RHO="/http-listener/host->'0.0.0.0';/helloWorldService/message->'Ciao Mondo!'" -p "8080:8080" -v ./target:/opt/restheart/plugins/custom softinstigate/restheart -s
 ```
 
 Test:
@@ -306,11 +317,14 @@ mvn dependency:tree -Dscope=compile
    ```
 
 2. **Build with verbose output:**
-   ```bash
-   # Maven
-   ./mvnw package -Pnative -X
    
-   # Gradle
+   Maven:
+   ```bash
+   ./mvnw package -Pnative -X
+   ```
+   
+   Gradle:
+   ```bash
    ./gradlew build -Pnative --info
    ```
 
