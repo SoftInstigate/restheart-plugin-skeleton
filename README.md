@@ -15,6 +15,8 @@ Check also the [RESTHeart Greetings Services Tutorial](https://restheart.org/doc
 
 Note: for RESTHeart 8.0.0 to 8.9.x, use Java 21 (or GraalVM 21)
 
+NOTE: For a known bug affecting RESTHeart 8.10, 8.11 and 8.12 (after migration to Java 24), for native build use RESTHeart 8.13+
+
 ---
 
 ## Quick Start
