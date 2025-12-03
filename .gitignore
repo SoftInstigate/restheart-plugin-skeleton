@@ -188,4 +188,6 @@ buildNumber.properties
 !.vscode/extensions.json
 *.code-workspace
 
-# End of https://www.toptal.com/developers/gitignore/api/vscode,intellij,java,macos,maven
+.mvn
+.gradle
+build/
