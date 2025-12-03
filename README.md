@@ -10,8 +10,21 @@ Check also the [RESTHeart Greetings Services Tutorial](https://restheart.org/doc
 
 ## Requirements
 
-- **Java 21+ (or GraalVM 21+)**: Required to compile and run the plugin.
+- **Java 24 (or GraalVM 24)**: Required to compile and run the plugin.
 - **Docker**: Used to containerize and run RESTHeart.
+
+Note: for RESTHeart 8.0.0 to 8.9.x, use Java 21 (or GraalVM 21)
+
+---
+
+## Build System
+
+This project supports both **Maven** and **Gradle** build systems:
+
+- **Maven**: `./mvnw clean package`
+- **Gradle**: `./gradlew clean build`
+
+Both produce identical outputs in the `target/` directory. See [GRADLE.md](GRADLE.md) for detailed Gradle documentation.
 
 ---
 
@@ -38,11 +51,13 @@ Follow these steps if you prefer to set up and run the project with docker:
    ```bash
    cd restheart-plugin-skeleton
    ```
-
-3. Build and run the container:
-
+3. Build and run the container (using Maven or Gradle):
    ```bash
-   ./mvnw clean package && docker run --pull=always --name restheart --rm -p "8080:8080" -v ./target:/opt/restheart/plugins/custom softinstigate/restheart -s
+   # With Maven
+   $ ./mvnw clean package && docker run --pull=always --name restheart --rm -p "8080:8080" -v ./target:/opt/restheart/plugins/custom softinstigate/restheart -s
+   
+   # Or with Gradle
+   $ ./gradlew clean build && docker run --pull=always --name restheart --rm -p "8080:8080" -v ./target:/opt/restheart/plugins/custom softinstigate/restheart -s
    ```
 
 > **Note:** The `-s` option (**standalone mode**) disables MongoDB-dependent plugins. Use this option if you do not intend to connect to a MongoDB instance during runtime.
@@ -166,7 +181,7 @@ RESTHeart supports building native images with GraalVM for optimized startup tim
 - Install GraalVM using [sdkman](https://sdkman.io/):
 
   ```bash
-  sdk install java 21.0.3-graal
+  $ sdk install java 24.0.2-graalce 
   ```
 
 ### Build and Run Native Image
@@ -175,6 +190,10 @@ RESTHeart supports building native images with GraalVM for optimized startup tim
 
    ```bash
    ./mvnw clean package -Pnative
+   ```
+   
+   ```bash
+   ./gradlew clean build -Pnative
    ```
 
 2. Run the binary:
@@ -187,7 +206,17 @@ For more details, check [Deploy Java Plugins on RESTHeart native](https://resthe
 
 ---
 
-## Maven Profiles
+## Maven Profiles for Native Image
+
+Add this profiles, to add to the native executable the restheart plugins.
+   
+   ```bash
+   ./mvnw clean package -Pnative,all-restheart-plugins
+   ```
+   
+   ```bash
+   ./gradlew clean build -Pnative -Pall-restheart-plugins
+   ```
 
 ### Available Profiles
 

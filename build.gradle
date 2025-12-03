@@ -1,0 +1,149 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.graalvm.buildtools.native' version '0.10.6'
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url = uri('https://s01.oss.sonatype.org/content/repositories/releases/')
+    }
+    maven {
+        url = uri('https://s01.oss.sonatype.org/content/repositories/snapshots/')
+    }
+    mavenCentral()
+}
+
+group = 'org.restheart'
+version = '1.0.0-SNAPSHOT'
+description = 'restheart-plugin-skeleton'
+
+def restheartVersion = '[8.12.0,8.1000.0)'
+
+// Profile-based configurations
+def nativeProfile = findProperty('native') == 'true'
+def securityProfile = findProperty('security') == 'true'
+def mongodbProfile = findProperty('mongodb') == 'true'
+def graphqlProfile = findProperty('graphql') == 'true'
+def mongoclientProviderProfile = findProperty('mongoclient-provider') == 'true'
+def metricsProfile = findProperty('metrics') == 'true'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(24)
+    }
+}
+
+dependencies {
+    // Runtime dependency
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
+    
+    // Base provided dependency
+    if (nativeProfile) {
+        implementation "org.restheart:restheart-commons:${restheartVersion}"
+        implementation "org.restheart:restheart:${restheartVersion}"
+        implementation "org.restheart:restheart-polyglot:${restheartVersion}"
+    } else {
+        compileOnly "org.restheart:restheart-commons:${restheartVersion}"
+    }
+    
+    // Profile-based dependencies
+    if (securityProfile) {
+        implementation "org.restheart:restheart-security:${restheartVersion}"
+    }
+    if (mongodbProfile) {
+        implementation "org.restheart:restheart-mongodb:${restheartVersion}"
+    }
+    if (graphqlProfile) {
+        implementation "org.restheart:restheart-graphql:${restheartVersion}"
+    }
+    if (mongoclientProviderProfile) {
+        implementation "org.restheart:restheart-mongoclient-provider:${restheartVersion}"
+    }
+    if (metricsProfile) {
+        implementation "org.restheart:restheart-metrics:${restheartVersion}"
+    }
+}
+
+// Configure clean to remove target directory
+tasks.named('clean') {
+    delete "$rootDir/target"
+}
+
+tasks.named('jar') {
+    // Set the final jar name
+    archiveBaseName = 'restheart-plugin-skeleton'
+    archiveVersion = ''
+    destinationDirectory = file("$rootDir/target")
+    
+    if (nativeProfile) {
+        manifest {
+            attributes(
+                'Main-Class': 'org.restheart.Bootstrapper',
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version,
+                'Build-Time': new Date().toInstant().toString()
+            )
+        }
+    }
+}
+
+// Task to copy runtime dependencies to target/lib
+tasks.register('copyDependencies', Copy) {
+    from configurations.runtimeClasspath
+    into "$rootDir/target/lib"
+}
+
+// Make build depend on copyDependencies
+tasks.named('build') {
+    dependsOn copyDependencies
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 24
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+// Native image configuration
+if (nativeProfile) {
+    def nativeGc = findProperty('native.gc') ?: '--gc=serial'
+    def nativeQuickBuild = findProperty('native.quickBuild') == null ? true : findProperty('native.quickBuild').toBoolean()
+    
+    graalvmNative {
+        binaries {
+            main {
+                imageName = 'restheart-plugin-skeleton'
+                buildArgs.add(nativeGc)
+                quickBuild = nativeQuickBuild
+            }
+        }
+    }
+    
+    tasks.named('nativeCompile') {
+        doLast {
+            def outputDir = file("$rootDir/target")
+            outputDir.mkdirs()
+            def nativeImage = outputFile.get().asFile
+            def targetImage = file("$rootDir/target/${nativeImage.name}")
+            nativeImage.bytes.withCloseable { bytes ->
+                targetImage.bytes = bytes
+            }
+            
+            // Create plugins directory
+            file("$rootDir/target/plugins").mkdirs()
+        }
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
