@@ -19,7 +19,7 @@ group = 'org.restheart'
 version = '1.0.0-SNAPSHOT'
 description = 'restheart-plugin-skeleton'
 
-def restheartVersion = '[8.12.0,8.1000.0)'
+def restheartVersion = [9.0.0,9.1000.0)
 
 // Profile-based configurations
 // When -Pname is passed, the property exists (even if empty)
@@ -32,23 +32,25 @@ def metricsProfile = project.hasProperty('metrics')
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(24)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
 dependencies {
     // Runtime dependency
     implementation 'org.apache.commons:commons-lang3:3.18.0'
-    
+
     // Base provided dependency
     if (nativeProfile) {
         implementation "org.restheart:restheart-commons:${restheartVersion}"
         implementation "org.restheart:restheart:${restheartVersion}"
         implementation "org.restheart:restheart-polyglot:${restheartVersion}"
+        // Update transitive dependency of undertow-core required for the native image build
+        implementation 'org.wildfly.common:wildfly-common:1.7.0.Final'
     } else {
         compileOnly "org.restheart:restheart-commons:${restheartVersion}"
     }
-    
+
     // Profile-based dependencies
     if (securityProfile) {
         implementation "org.restheart:restheart-security:${restheartVersion}"
@@ -77,7 +79,7 @@ tasks.named('jar') {
     archiveBaseName = 'restheart-plugin-skeleton'
     archiveVersion = ''
     destinationDirectory = file("$rootDir/target")
-    
+
     // Always set Main-Class for native builds
     manifest {
         attributes(
@@ -123,7 +125,7 @@ tasks.withType(Javadoc).configureEach {
 if (nativeProfile) {
     def nativeGc = findProperty('native.gc') ?: '--gc=serial'
     def nativeQuickBuild = findProperty('native.quickBuild') == null ? true : findProperty('native.quickBuild').toBoolean()
-    
+
     graalvmNative {
         binaries {
             main {
@@ -136,16 +138,16 @@ if (nativeProfile) {
             }
         }
     }
-    
+
     tasks.named('nativeCompile') {
         doLast {
             def outputDir = file("$rootDir/target")
             outputDir.mkdirs()
-            
+
             // Copy the native image to target directory
             def buildDir = file("$rootDir/build/native/nativeCompile")
             def nativeExe = file("$buildDir/restheart-plugin-skeleton")
-            
+
             // Also check for dylib on macOS or exe on Windows
             if (!nativeExe.exists()) {
                 nativeExe = file("$buildDir/restheart-plugin-skeleton.dylib")
@@ -153,7 +155,7 @@ if (nativeProfile) {
             if (!nativeExe.exists()) {
                 nativeExe = file("$buildDir/restheart-plugin-skeleton.exe")
             }
-            
+
             if (nativeExe.exists()) {
                 def targetName = nativeExe.name.replace('.dylib', '').replace('.exe', '')
                 def targetExe = file("$rootDir/target/$targetName")
@@ -168,7 +170,7 @@ if (nativeProfile) {
             } else {
                 println "Warning: Native image not found in $buildDir"
             }
-            
+
             // Create plugins directory
             file("$rootDir/target/plugins").mkdirs()
         }

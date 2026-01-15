@@ -13,8 +13,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.release>24</maven.compiler.release>
-    <restheart.version>[8.13.0,8.1000.0)</restheart.version>
+    <maven.compiler.release>25</maven.compiler.release>
+    <restheart.version>[9.0.0,9.1000.0)</restheart.version>
     <native.gc>--gc=serial</native.gc><!-- garbage collector 'G1' is only availabe on Linux and it is better than 'serial' -->
     <native.quickBuild>true</native.quickBuild>
   </properties>
@@ -117,6 +117,12 @@
           <groupId>org.restheart</groupId>
           <artifactId>restheart-polyglot</artifactId>
           <version>${restheart.version}</version>
+        </dependency>
+        <!-- Update transitive dependency of undertow-core required for the native image build -->
+        <dependency>
+          <groupId>org.wildfly.common</groupId>
+          <artifactId>wildfly-common</artifactId>
+          <version>1.7.0.Final</version>
         </dependency>
       </dependencies>
       <build>

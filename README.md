@@ -10,12 +10,10 @@ Check also the [RESTHeart Greetings Services Tutorial](https://restheart.org/doc
 
 ## Requirements
 
-- **Java 24 (or GraalVM 24)**: Required to compile and run the plugin.
+- **GraalVM 25 (or Java 25)**: Required to compile and run the plugin.
 - **Docker**: Used to containerize and run RESTHeart.
 
-Note: for RESTHeart 8.0.0 to 8.9.x, use Java 21 (or GraalVM 21)
-
-NOTE: For a known bug affecting RESTHeart 8.10, 8.11 and 8.12 (after migration to Java 24), for native build use RESTHeart 8.13+
+NOTE: This works for RESTHeart 9+, for RESTHeart 8.x, use the git tag `8.x`
 
 ---
 
@@ -169,13 +167,13 @@ Native images provide faster startup and lower memory usage.
 
 Install GraalVM using [SDKMAN](https://sdkman.io/):
 ```bash
-sdk install java 24.0.2-graalce
-sdk use java 24.0.2-graalce
+sdk install java 25.0.1-graalce
+sdk use java 25.0.1-graalce
 ```
 
 ### Build Commands
 
-**Quick build** (faster, default):
+**Quick build** (faster, deault):
 
 Maven:
 ```bash
@@ -368,7 +366,7 @@ Gradle provides faster builds through:
 Edit `gradle.properties` to customize:
 ```properties
 # RESTHeart version
-restheart.version=[8.12.0,8.1000.0)
+restheart.version=[9.0.0,9.1000.0)
 
 # Native image settings
 native.gc=--gc=serial
