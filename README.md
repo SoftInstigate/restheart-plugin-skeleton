@@ -2,15 +2,18 @@
 
 This repository provides a skeleton project for developing plugins for RESTHeart, a REST API platform for MongoDB.
 
-Documentation for plugins development is available at [https://restheart.org/docs/plugins/overview/](https://restheart.org/docs/plugins/overview/).
+It has a plugin in Java, built with Maven or Gradle, and one in TypeScript, in [`js-plugin`](js-plugin), on the `restheart:sdk` module. Keep the one you need, or both: they run side by side, and the TypeScript interceptor changes the response of the Java service.
 
-Check also the [RESTHeart Greetings Services Tutorial](https://restheart.org/docs/plugins/tutorial)
+Documentation for plugins development is available at [restheart.org/docs/framework/overview](https://restheart.org/docs/framework/overview), for JavaScript and TypeScript at [restheart.org/docs/framework/javascript-plugins](https://restheart.org/docs/framework/javascript-plugins).
+
+Check also the [RESTHeart Greetings Services Tutorial](https://restheart.org/docs/framework/tutorial)
 
 ---
 
 ## Requirements
 
-- **GraalVM 25 (or Java 25)**: Required to compile and run the plugin.
+- **GraalVM 25 (or Java 25)**: Required to compile and run the Java plugin.
+- **Node.js and npm**: Required to compile the TypeScript plugin, only if you keep it.
 - **Docker**: Used to containerize and run RESTHeart.
 
 NOTE: This works for RESTHeart 9+, for RESTHeart 8.x, use the git tag `8.x`
@@ -59,6 +62,46 @@ Follow the [Usage Guide](https://github.com/SoftInstigate/restheart-cli/blob/mas
    curl localhost:8080/srv
    {"message":"Hello World!","rnd":"njXZksfKFW"}
    ```
+
+---
+
+## JavaScript and TypeScript Plugins
+
+The [`js-plugin`](js-plugin) directory is a plugin written in TypeScript on `restheart:sdk`, the SDK of RESTHeart 9.14.0 and later. It has two plugins:
+
+- `helloJsService`, at `/js/hello`;
+- `helloJsInterceptor`, which adds a field to the response of the Java `helloWorldService`.
+
+1. **Build:**
+   ```bash
+   cd js-plugin
+   npm install
+   npm run build
+   cd ..
+   ```
+
+   `tsc` compiles `src/*.mts` to the `.mjs` files listed in `js-plugin/package.json`. RESTHeart does not transpile.
+
+2. **Run with Docker**, mounting the Java plugin and the JavaScript one, each in its own directory:
+   ```bash
+   docker run --pull=always --name restheart --rm -p "8080:8080" \
+     -v ./target:/opt/restheart/plugins/custom \
+     -v ./js-plugin:/opt/restheart/plugins/js-plugin \
+     softinstigate/restheart -s
+   ```
+
+3. **Test:**
+   ```bash
+   curl "localhost:8080/js/hello?name=Andrea"
+   {"message":"Hello Andrea!"}
+
+   curl localhost:8080/srv
+   {"message":"Hello World!","rnd":"njXZksfKFW","interceptedBy":"helloJsInterceptor"}
+   ```
+
+JavaScript plugins hot deploy: `npm run watch` recompiles on every change, and RESTHeart redeploys a plugin when its `.mjs` file changes. No restart.
+
+The `restheart:sdk` module needs no Java: request and response are plain objects, and `logger`, `crypto`, `http`, `mongo` and the plugin's configuration are imports. See [Develop Plugins in JavaScript](https://restheart.org/docs/framework/javascript-plugins).
 
 ---
 
@@ -173,7 +216,7 @@ sdk use java 25.0.1-graalce
 
 ### Build Commands
 
-**Quick build** (faster, deault):
+**Quick build** (faster, default):
 
 Maven:
 ```bash
@@ -377,7 +420,8 @@ native.quickBuild=true
 
 ## Next Steps
 
-- 📖 Read the [RESTHeart Plugins Documentation](https://restheart.org/docs/plugins/overview/)
-- 🎓 Follow the [Greetings Services Tutorial](https://restheart.org/docs/plugins/tutorial)
+- 📖 Read the [RESTHeart Plugins Documentation](https://restheart.org/docs/framework/overview)
+- 🟨 Write plugins in JavaScript or TypeScript with the [JavaScript SDK](https://restheart.org/docs/framework/javascript-plugins)
+- 🎓 Follow the [Greetings Services Tutorial](https://restheart.org/docs/framework/tutorial)
 - 🔧 Explore the [RESTHeart CLI](https://github.com/SoftInstigate/restheart-cli) for hot-reloading
-- 🚀 Check [Deployment Guide](https://restheart.org/docs/plugins/deploy) for production tips
+- 🚀 Check [Deployment Guide](https://restheart.org/docs/framework/deploy) for production tips

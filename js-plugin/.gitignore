@@ -1,0 +1,3 @@
+# compiled by tsc from src/*.mts
+*.mjs
+node_modules

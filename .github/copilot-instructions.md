@@ -3,8 +3,8 @@
 These instructions help AI agents work productively in this repo.
 
 ## Big Picture
-- Purpose: Build Java plugins for RESTHeart (MongoDB REST/GraphQL platform).
-- Output: A plugin JAR plus its runtime deps under `target/` so RESTHeart can load it.
+- Purpose: Build plugins for RESTHeart (MongoDB REST/GraphQL platform), in Java and in JavaScript/TypeScript.
+- Output: A plugin JAR plus its runtime deps under `target/`, and a JavaScript plugin directory `js-plugin/`, so RESTHeart can load both.
 - Two run modes:
   - Docker: mount `target` as plugin dir into official `softinstigate/restheart` image.
   - Native: build a standalone binary with GraalVM via Maven `native` profile.
@@ -14,7 +14,10 @@ These instructions help AI agents work productively in this repo.
   - Registers via `@RegisterPlugin(name, description, defaultURI, blocking)` and implements `JsonService#handle(JsonRequest, JsonResponse)`.
   - Accepts config via `@Inject("config") Map<String,Object>` and `@OnInit` reads `message`.
   - Pattern: `GET` → JSON body using `GsonUtils.object()`, `OPTIONS` → `handleOptions`, others → `405`.
-- `pom.xml`: Java 21, RESTHeart version `${restheart.version}`, plugin copy-deps, optional profiles.
+- `pom.xml`: Java 25, RESTHeart version `${restheart.version}`, plugin copy-deps, optional profiles.
+- `js-plugin/`: a TypeScript plugin on `restheart:sdk` (RESTHeart 9.14.0+). `src/*.mts` compile with `tsc` to the `.mjs` files that `js-plugin/package.json` lists in `rh:services` and `rh:interceptors`.
+  - `src/hello.mts`: `defineService` with `contentKind: "json"`, `req.query`, `config`, `res.json()`.
+  - `src/hello-interceptor.mts`: `defineInterceptor` with `contentKind: "json"` on the Java `helloWorldService` (a `JsonService`), changing `res.content`.
 - `README.md`: Canonical usage, Docker, MongoDB, native image, and RHO config examples.
 - Runtime classpath: External deps copied into `target/lib` by `maven-dependency-plugin`.
 
@@ -31,8 +34,15 @@ These instructions help AI agents work productively in this repo.
   - `curl localhost:8080/srv`
   - or `http -b :8080/srv`
 
+## JavaScript Plugin Workflow
+- Build: `cd js-plugin && npm install && npm run build`.
+- Run: mount it in its own plugins subdirectory, next to the JAR: `-v ./js-plugin:/opt/restheart/plugins/js-plugin`.
+- Test: `curl "localhost:8080/js/hello?name=Andrea"`.
+- Rules: import from `restheart:sdk`, never Java types for everyday work; blocking calls are correct (one virtual thread per request), no promises or async/await; module-level state is per pooled context, not a server-wide cache; throw `BadRequestError`, `NotFoundError` and the other typed errors instead of setting the status by hand.
+- Docs: https://restheart.org/docs/framework/javascript-plugins
+
 ## Native Image Workflow (GraalVM)
-- Install GraalVM 21 with sdkman: `sdk install java 21.0.3-graal`.
+- Install GraalVM 25 with sdkman: `sdk install java 25.0.1-graalce`.
 - Build: `./mvnw clean package -Pnative`.
 - Run: `RHO="/fullAuthorizer/enabled->true" target/restheart-plugin-skeleton`.
 
@@ -59,5 +69,5 @@ These instructions help AI agents work productively in this repo.
 - Keep business logic isolated; avoid static initialization that blocks native-image compilation.
 
 ## Helpful References
-- Docs: https://restheart.org/docs/plugins/overview/ and tutorial links in `README.md`.
+- Docs: https://restheart.org/docs/framework/overview and tutorial links in `README.md`.
 - CLI for dev loop (watch/redeploy): https://github.com/SoftInstigate/restheart-cli

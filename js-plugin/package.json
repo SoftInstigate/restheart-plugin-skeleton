@@ -1,0 +1,19 @@
+{
+  "name": "restheart-plugin-skeleton-js",
+  "version": "1.0.0",
+  "description": "JavaScript and TypeScript plugins for RESTHeart, on restheart:sdk",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "@restheart/sdk": "^9.14.0",
+    "typescript": "^5.6.0"
+  },
+  "license": "Apache-2.0",
+  "rh:spi": 1,
+  "rh:services": ["hello.mjs"],
+  "rh:interceptors": ["hello-interceptor.mjs"]
+}
